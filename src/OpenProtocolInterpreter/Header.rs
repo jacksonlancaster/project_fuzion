@@ -1,11 +1,9 @@
-//use serde::{Deserialize, Serialize};
-//use bincode;
+use crate::OpenProtocolInterpreter::Utils;
 use substring::Substring;
 use std::default::Default;
 
 pub const DEFAULT_REVISION:i32 = 1;
 
-//#[derive(Deserialize, Copy, Clone, Default)]
 #[derive(Copy, Clone, Default)]
 pub struct Header_t {
     pub Length:i32,
@@ -35,14 +33,8 @@ impl Header_t {
     pub fn IsNotEmptyOrZero(pkg:String) -> (bool, i32) {
         let (parse_success, value) = Self::ParseInt(pkg.clone());
 
-        (!pkg.trim().is_empty() && parse_success  && value > 0, value)
+        (!Utils::IsNullOrWhiteSpace(pkg) && parse_success  && value > 0, value)
     }
-
-    /*pub fn ProcessHeader2(package:String) -> Self {
-        let hdr: Header = bincode::deserialize(&package).unwrap();
-
-        hdr
-    }*/
 
     pub fn ProcessHeader(package:String) -> Self {
         let mut hdr: Header_t = Default::default();
@@ -54,7 +46,7 @@ impl Header_t {
         hdr.Mid = package.substring(4, 8).parse::<i32>().expect("Failed parsing integer value");
         (flag, value) = Self::IsNotEmptyOrZero(package.substring(8, 11).to_string());
         hdr.Revision = if flag {value} else {1};
-        hdr.NoAckFlag = !package.substring(11, 12).trim().is_empty(); /* not IsNullOrWhiteSpace */
+        hdr.NoAckFlag = !Utils::IsNullOrWhiteSpace(package.substring(11, 12).to_string());
         (parse_success, hdr.StationId) = Self::ParseInt(package.substring(12, 14).to_string());
         if !parse_success { 
             hdr.StationId =1;
@@ -92,7 +84,7 @@ impl Header_t {
         strVal += &self.NumberOfMessages.to_string() + &self.MessageNumber.to_string();
         */
 
-        let mut NoAckFlag_str:String;
+        let NoAckFlag_str:String;
 
         match self.NoAckFlag {
             true => {

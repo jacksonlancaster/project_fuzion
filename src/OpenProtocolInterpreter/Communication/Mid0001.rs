@@ -19,7 +19,7 @@ impl Mid0001_t {
         }
 
         pub fn new3(revision:i32) -> Self {
-            let mut hdr1 = Header_t{Mid:MID, Revision:revision, ..Default::default()};
+            let hdr1 = Header_t{Mid:MID, Revision:revision, ..Default::default()};
             Self{Header:hdr1, UseKeepAlive:Default::default()}
         }
 
