@@ -5,22 +5,22 @@ use std::default::Default;
 pub const DEFAULT_REVISION:i32 = 1;
 
 #[derive(Copy, Clone, Default)]
-pub struct Header_t {
-    pub Length:i32,
-    pub Mid:i32,
-    pub Revision:i32,
-    pub StandardizedRevision:i32,
-    pub NoAckFlag:bool,
-    pub StationId:i32,
-    pub SpindleId:i32,
-    pub SequenceNumber:i32,
-    pub NumberOfMessages:i32,
-    pub MessageNumber:i32
+pub struct HeaderT {
+    pub length:i32,
+    pub mid:i32,
+    pub revision:i32,
+    pub standardized_revision:i32,
+    pub no_ack_flag:bool,
+    pub station_id:i32,
+    pub spindle_id:i32,
+    pub sequence_number:i32,
+    pub number_of_messages:i32,
+    pub message_number:i32
 }
 
-impl Header_t {
+impl HeaderT {
 
-    pub fn ParseInt(pkg:String) -> (bool, i32) {
+    pub fn parse_int(pkg:String) -> (bool, i32) {
         let mut value = 0;
         let mut parse_success = true;
         match pkg.parse::<i32>() {
@@ -30,43 +30,43 @@ impl Header_t {
 
         (parse_success, value)
     }
-    pub fn IsNotEmptyOrZero(pkg:String) -> (bool, i32) {
-        let (parse_success, value) = Self::ParseInt(pkg.clone());
+    pub fn is_not_empty_or_zero(pkg:String) -> (bool, i32) {
+        let (parse_success, value) = Self::parse_int(pkg.clone());
 
-        (!Utils::IsNullOrWhiteSpace(pkg) && parse_success  && value > 0, value)
+        (!Utils::is_null_or_white_space(pkg) && parse_success  && value > 0, value)
     }
 
-    pub fn ProcessHeader(package:String) -> Self {
-        let mut hdr: Header_t = Default::default();
+    pub fn process_header(package:String) -> Self {
+        let mut hdr: HeaderT = Default::default();
         let mut parse_success:bool;
         let mut flag:bool;
         let mut value:i32;
 
-        hdr.Length = package.substring(0, 4).parse::<i32>().expect("Failed parsing integer value");
-        hdr.Mid = package.substring(4, 8).parse::<i32>().expect("Failed parsing integer value");
-        (flag, value) = Self::IsNotEmptyOrZero(package.substring(8, 11).to_string());
-        hdr.Revision = if flag {value} else {1};
-        hdr.NoAckFlag = !Utils::IsNullOrWhiteSpace(package.substring(11, 12).to_string());
-        (parse_success, hdr.StationId) = Self::ParseInt(package.substring(12, 14).to_string());
+        hdr.length = package.substring(0, 4).parse::<i32>().expect("Failed parsing integer value");
+        hdr.mid = package.substring(4, 8).parse::<i32>().expect("Failed parsing integer value");
+        (flag, value) = Self::is_not_empty_or_zero(package.substring(8, 11).to_string());
+        hdr.revision = if flag {value} else {1};
+        hdr.no_ack_flag = !Utils::is_null_or_white_space(package.substring(11, 12).to_string());
+        (parse_success, hdr.station_id) = Self::parse_int(package.substring(12, 14).to_string());
         if !parse_success { 
-            hdr.StationId =1;
+            hdr.station_id =1;
         }
-        (parse_success, hdr.SpindleId) = Self::ParseInt(package.substring(14, 16).to_string());
+        (parse_success, hdr.spindle_id) = Self::parse_int(package.substring(14, 16).to_string());
         if !parse_success { 
-            hdr.SpindleId =1;
+            hdr.spindle_id =1;
         }
 
-        (flag, value) = Self::IsNotEmptyOrZero(package.substring(16, 18).to_string());
-        hdr.SequenceNumber = if flag {value} else {Default::default()};
-        (flag, value) = Self::IsNotEmptyOrZero(package.substring(18, 19).to_string());
-        hdr.NumberOfMessages = if flag {value} else {Default::default()};
-        (flag, value) = Self::IsNotEmptyOrZero(package.substring(19, 20).to_string());
-        hdr.MessageNumber = if flag {value} else {Default::default()};
+        (flag, value) = Self::is_not_empty_or_zero(package.substring(16, 18).to_string());
+        hdr.sequence_number = if flag {value} else {Default::default()};
+        (flag, value) = Self::is_not_empty_or_zero(package.substring(18, 19).to_string());
+        hdr.number_of_messages = if flag {value} else {Default::default()};
+        (flag, value) = Self::is_not_empty_or_zero(package.substring(19, 20).to_string());
+        hdr.message_number = if flag {value} else {Default::default()};
 
         hdr
     }
 
-    pub fn ToString(&mut self) -> String {
+    pub fn to_string(&mut self) -> String {
         let mut strVal = String::new();
 
         /*strVal = self.Length.to_string() + &self.Mid.to_string() + &self.Revision.to_string() + &self.StandardizedRevision.to_string();
@@ -84,19 +84,19 @@ impl Header_t {
         strVal += &self.NumberOfMessages.to_string() + &self.MessageNumber.to_string();
         */
 
-        let NoAckFlag_str:String;
+        let no_ack_flag_str:String;
 
-        match self.NoAckFlag {
+        match self.no_ack_flag {
             true => {
-                NoAckFlag_str = "1".to_string();
+                no_ack_flag_str = "1".to_string();
             } 
             false => {
-                NoAckFlag_str = " ".to_string();
+                no_ack_flag_str = " ".to_string();
             }
         }
-        strVal = format!("{}{}{}{}{}{}{}{}{}{}", self.Length, self.Mid, self.Revision, self.StandardizedRevision,
-                                    NoAckFlag_str, self.StationId, self.SpindleId, self.SequenceNumber,
-                                    self.NumberOfMessages, self.MessageNumber);
+        strVal = format!("{}{}{}{}{}{}{}{}{}{}", self.length, self.mid, self.revision, self.standardized_revision,
+                                    no_ack_flag_str, self.station_id, self.spindle_id, self.sequence_number,
+                                    self.number_of_messages, self.message_number);
         
         strVal
     }

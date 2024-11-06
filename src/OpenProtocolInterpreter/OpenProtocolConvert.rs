@@ -1,12 +1,12 @@
 use crate::OpenProtocolInterpreter::Enums::PaddingOrientation;
 
-pub struct OpenProtocolConvert_t {
+pub struct OpenProtocolConvertT {
 
 }
 
-impl OpenProtocolConvert_t {
+impl OpenProtocolConvertT {
     
-    pub fn TruncatePadded(paddingChar:char, size:i32, orientation:PaddingOrientation, value:String)->String {
+    pub fn truncate_padded(paddingChar:char, size:i32, orientation:PaddingOrientation, value:String)->String {
 
         String::new()
     }

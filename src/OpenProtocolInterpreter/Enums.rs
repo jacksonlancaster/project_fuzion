@@ -853,10 +853,10 @@ pub enum OperationType
     Pulse = 4
 }
 
-#[derive(Debug, Clone, Copy, Hash, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, Hash, PartialEq)]
 pub enum PaddingOrientation
 {
-    RightPadded,
+    #[default] RightPadded,
     LeftPadded
 }
 
