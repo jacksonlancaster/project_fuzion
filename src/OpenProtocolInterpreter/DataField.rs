@@ -1,20 +1,15 @@
-
-use std::borrow::Borrow;
-use std::default;
-use std::hash::{DefaultHasher, Hash, Hasher};
-
 use crate::OpenProtocolInterpreter::Enums::PaddingOrientation;
 use crate::OpenProtocolInterpreter::Utils;
 use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 use std::any::type_name;
 use std::clone::Clone;
-use std::any::Any;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct DataFieldT {
     _padding_char:char,
     _padding_orientation:PaddingOrientation,
-    cached_value:Option<Box<dyn Any>>,
+    //cached_value:Option<Box<dyn Any>>,
+    cached_value:Option<Utils::ClnBox>,
     default:Box<DataFieldT>, 
     pub has_prefix:bool,
     pub field:i32,
@@ -51,13 +46,13 @@ impl DataFieldT {
         self.total_size = if self.has_prefix {2 + self.size} else {self.size};
     }
 
-    pub fn new(field:i32, index:i32, size:i32, hasPrefix:Option<bool>) -> Self {
+    pub fn new(field:i32, index:i32, size:i32, has_prefix:Option<bool>) -> Self {
             let mut df = Self {
                 _padding_char:' ',
                 _padding_orientation:PaddingOrientation::RightPadded,
                 cached_value:None,
                 default:DataFieldT::DF_BOX_NONE.unwrap(),
-                has_prefix:hasPrefix.unwrap_or(true),
+                has_prefix:has_prefix.unwrap_or(true),
                 field,
                 index,
                 size,
@@ -72,14 +67,14 @@ impl DataFieldT {
 
     }
 
-    pub fn new2(&mut self, field:i32 /*enum*/, index:i32, size:i32, hasPrefix:Option<bool>) -> Self {
+    pub fn new2(&mut self, field:i32 /*enum*/, index:i32, size:i32, has_prefix:Option<bool>) -> Self {
 
         let mut df = Self {
             _padding_char:' ',
             _padding_orientation:PaddingOrientation::RightPadded,
             cached_value:None,
             default:DataFieldT::DF_BOX_NONE.unwrap(),
-            has_prefix:hasPrefix.unwrap_or(true),
+            has_prefix:has_prefix.unwrap_or(true),
             field : Utils::get_hash_code(field),
             index,
             size,
@@ -93,14 +88,14 @@ impl DataFieldT {
         df
     }
 
-        pub fn new3(field:i32, index:i32, size:i32, paddingChar:char, paddingOrientation:Option<PaddingOrientation>,  hasPrefix:Option<bool>) -> Self {
+        pub fn new3(field:i32, index:i32, size:i32, padding_char:char, padding_orientation:Option<PaddingOrientation>,  has_prefix:Option<bool>) -> Self {
 
             let mut df = Self {
-                _padding_char:paddingChar,
-                _padding_orientation:paddingOrientation.unwrap_or(PaddingOrientation::RightPadded),
+                _padding_char:padding_char,
+                _padding_orientation:padding_orientation.unwrap_or(PaddingOrientation::RightPadded),
                 cached_value:None,
                 default:DataFieldT::DF_BOX_NONE.unwrap(),
-                has_prefix:hasPrefix.unwrap_or(true),
+                has_prefix:has_prefix.unwrap_or(true),
                 field, 
                 index,
                 size,
@@ -114,14 +109,14 @@ impl DataFieldT {
             df
         }
 
-        pub fn new4(field:i32 /*enum*/, index:i32, size:i32, paddingChar:char, paddingOrientation:Option<PaddingOrientation>,  hasPrefix:Option<bool>) -> Self {
+        pub fn new4(field:i32 /*enum*/, index:i32, size:i32, padding_char:char, padding_orientation:Option<PaddingOrientation>,  has_prefix:Option<bool>) -> Self {
 
             let mut df = Self {
-                _padding_char:paddingChar,
-                _padding_orientation:paddingOrientation.unwrap_or(PaddingOrientation::RightPadded),
+                _padding_char:padding_char,
+                _padding_orientation:padding_orientation.unwrap_or(PaddingOrientation::RightPadded),
                 cached_value:None,
                 default:DataFieldT::DF_BOX_NONE.unwrap(),
-                has_prefix:hasPrefix.unwrap_or(true),
+                has_prefix:has_prefix.unwrap_or(true),
                 field : Utils::get_hash_code(field),
                 index,
                 size,
@@ -135,13 +130,17 @@ impl DataFieldT {
             df
         }
 
-        pub fn get_value<T: 'static + Clone>(&mut self, converter:fn(String)->T) -> T {
+        pub fn get_value<T: 'static + Clone>(&mut self, converter:fn(String)->T) -> T 
+        where 
+            T:'static + Utils::ClnAny + Clone,
+        
+        {
 
             if Utils::is_null_or_white_space(self.value.to_string()) {
                 self.cached_value = None; //TBD- T::default() ?
             } else {
                 if self.is_value_not_cached::<T>() {
-                    self.cached_value = Some(Box::new(converter(self.value.to_string())));
+                    self.cached_value = Some(Utils::ClnBox::new(converter(self.value.to_string())));
                 }
             }
 
@@ -153,13 +152,16 @@ impl DataFieldT {
 
         }
 
-        pub fn get_value2<T: 'static + Clone>(&mut self, converter:fn(Vec<u8>)->T) -> T {
+        pub fn get_value2<T: 'static + Clone>(&mut self, converter:fn(Vec<u8>)->T) -> T 
+        where 
+        T:Utils::ClnAny,
+        {
 
             if self.raw_value.is_empty() || self.raw_value.is_empty() { //TBD for 1st one- == self.default ?
                 self.cached_value = None; //TBD-  T::default() ?
             } else {
                 if self.is_value_not_cached::<T>() {
-                    self.cached_value = Some(Box::new(converter(self.raw_value.clone())));
+                    self.cached_value = Some(Utils::ClnBox::new(converter(self.raw_value.clone())));
                 }
             }
 
@@ -184,57 +186,57 @@ impl DataFieldT {
             self.size = self.raw_value.len() as i32;
         }
         
-        pub fn string4(field:i32, index:i32, size:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new3(field, index, size, ' ', Some(PaddingOrientation::RightPadded), hasPrefix)
+        pub fn string4(field:i32, index:i32, size:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new3(field, index, size, ' ', Some(PaddingOrientation::RightPadded), has_prefix)
         }
 
-        pub fn string3(field:i32, index:i32, size:i32, paddingOrientation:PaddingOrientation, hasPrefix:Option<bool>)->Self {
-            DataFieldT::new3(field, index, size, ' ', Some(paddingOrientation), hasPrefix)
+        pub fn string3(field:i32, index:i32, size:i32, padding_orientation:PaddingOrientation, has_prefix:Option<bool>)->Self {
+            DataFieldT::new3(field, index, size, ' ', Some(padding_orientation), has_prefix)
         }
-        pub fn string2(field:i32 /*Enum*/, index:i32, size:i32, hasPrefix:Option<bool>)  -> Self {
-            DataFieldT::new3(field, index, size, ' ', Some(PaddingOrientation::RightPadded), hasPrefix)
+        pub fn string2(field:i32 /*Enum*/, index:i32, size:i32, has_prefix:Option<bool>)  -> Self {
+            DataFieldT::new3(field, index, size, ' ', Some(PaddingOrientation::RightPadded), has_prefix)
         }
-        pub fn string(field:i32 /*Enum*/, index:i32, size:i32, paddingOrientation:PaddingOrientation, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new3(field, index, size, ' ', Some(paddingOrientation), hasPrefix)
-        }
-
-        pub fn boolean2(field:i32, index:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new(field, index, 1, hasPrefix)
+        pub fn string(field:i32 /*Enum*/, index:i32, size:i32, padding_orientation:PaddingOrientation, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new3(field, index, size, ' ', Some(padding_orientation), has_prefix)
         }
 
-        pub fn boolean(field:i32 /*Enum */, index:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new(field, index, 1, hasPrefix)
+        pub fn boolean2(field:i32, index:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new(field, index, 1, has_prefix)
         }
 
-        pub fn timestamp2(field:i32, index:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new(field, index, 19, hasPrefix)
+        pub fn boolean(field:i32 /*Enum */, index:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new(field, index, 1, has_prefix)
         }
 
-        pub fn timestamp(field:i32 /* Enum */, index:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new(field, index, 19, hasPrefix)
+        pub fn timestamp2(field:i32, index:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new(field, index, 19, has_prefix)
         }
 
-        pub fn number2(field:i32, index:i32, size:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new4(field, index, size, '0', Some(PaddingOrientation::LeftPadded), hasPrefix)
+        pub fn timestamp(field:i32 /* Enum */, index:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new(field, index, 19, has_prefix)
         }
 
-        pub fn number(field:i32 /*Enum */, index:i32, size:i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new4(field, index, size, '0', Some(PaddingOrientation::LeftPadded), hasPrefix)
+        pub fn number2(field:i32, index:i32, size:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new4(field, index, size, '0', Some(PaddingOrientation::LeftPadded), has_prefix)
         }
 
-        pub fn volatile4(field:i32, index:i32, hasPrefix: Option<bool> ) -> Self {
-            DataFieldT::new(field, index, 0, hasPrefix)
+        pub fn number(field:i32 /*Enum */, index:i32, size:i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new4(field, index, size, '0', Some(PaddingOrientation::LeftPadded), has_prefix)
         }
 
-        pub fn volatile3(field: i32 /*Enum */, index: i32, hasPrefix :Option<bool>) -> Self {
-            DataFieldT::new(field, index, 0, hasPrefix)
+        pub fn volatile4(field:i32, index:i32, has_prefix: Option<bool> ) -> Self {
+            DataFieldT::new(field, index, 0, has_prefix)
         }
 
-        pub fn volatile2(field: i32, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new(field, 0, 0, hasPrefix)
+        pub fn volatile3(field: i32 /*Enum */, index: i32, has_prefix :Option<bool>) -> Self {
+            DataFieldT::new(field, index, 0, has_prefix)
         }
-        pub fn volatile(field: i32 /*Enum */, hasPrefix:Option<bool>) -> Self {
-            DataFieldT::new(field, 0, 0, hasPrefix)
+
+        pub fn volatile2(field: i32, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new(field, 0, 0, has_prefix)
+        }
+        pub fn volatile(field: i32 /*Enum */, has_prefix:Option<bool>) -> Self {
+            DataFieldT::new(field, 0, 0, has_prefix)
         }
 
         pub fn set_value(mut self, value:String)

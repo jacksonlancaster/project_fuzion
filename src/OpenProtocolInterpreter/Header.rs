@@ -67,22 +67,7 @@ impl HeaderT {
     }
 
     pub fn to_string(&mut self) -> String {
-        let mut strVal = String::new();
-
-        /*strVal = self.Length.to_string() + &self.Mid.to_string() + &self.Revision.to_string() + &self.StandardizedRevision.to_string();
-        match self.NoAckFlag {
-            true => {
-                //strVal += "1".to_string();
-                strVal += "1";
-            } 
-            false => {
-                //strVal += " ".to_string();
-                strVal += " ";
-            }
-        }
-        strVal += &self.StationId.to_string() + &self.SpindleId.to_string() + &self.SequenceNumber.to_string();
-        strVal += &self.NumberOfMessages.to_string() + &self.MessageNumber.to_string();
-        */
+        let str_val;
 
         let no_ack_flag_str:String;
 
@@ -94,10 +79,10 @@ impl HeaderT {
                 no_ack_flag_str = " ".to_string();
             }
         }
-        strVal = format!("{}{}{}{}{}{}{}{}{}{}", self.length, self.mid, self.revision, self.standardized_revision,
+        str_val = format!("{}{}{}{}{}{}{}{}{}{}", self.length, self.mid, self.revision, self.standardized_revision,
                                     no_ack_flag_str, self.station_id, self.spindle_id, self.sequence_number,
                                     self.number_of_messages, self.message_number);
         
-        strVal
+        str_val
     }
 }
