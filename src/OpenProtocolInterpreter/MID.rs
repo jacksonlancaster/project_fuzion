@@ -15,9 +15,9 @@ impl MidT {
 
         const DEFAULT_REVISION: i32 = 1;
 
-        pub fn new(self, hdr:HeaderT) -> Self {
+        pub fn new(hdr:HeaderT) -> Self {
             //RevisionsByFields = new SafeAccessRevisionsFields(RegisterDatafields());
-            Self{header:hdr, revisions_by_fields:self.register_datafields()}
+            Self{header:hdr, revisions_by_fields:Self::register_datafields()}
         }
 
         pub fn new2(mid:i32, revision:i32, no_ack_flag:Option<bool>) -> Self /* : this(new Header() */ {
@@ -87,7 +87,7 @@ impl MidT {
             return builder;
         }
 
-        fn register_datafields(self) ->HashMap<i32, Vec<DataFieldT>> {
+        fn register_datafields() ->HashMap<i32, Vec<DataFieldT>> {
             let rvf:HashMap<i32, Vec<DataFieldT>> = HashMap::new();
 
             rvf
@@ -138,7 +138,7 @@ impl MidT {
             }
         }
 
-        fn get_value(self, field:&DataFieldT, package:String) -> String {
+        pub fn get_value(self, field:&DataFieldT, package:String) -> String {
                 let res = if field.has_prefix {package.substring(2 + field.index as usize, field.size as usize)} else {package.substring(field.index as usize, field.size as usize)};
                 res.to_string()
         }
@@ -158,7 +158,7 @@ impl MidT {
             bytes
         }
 
-        fn  get_field(self, revision:i32, field:i32) ->DataFieldT
+        pub fn  get_field(self, revision:i32, field:i32) ->DataFieldT
         {
             let result:DataFieldT;
 
