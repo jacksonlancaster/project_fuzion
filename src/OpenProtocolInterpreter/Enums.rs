@@ -1,3 +1,4 @@
+use std::mem::transmute;
 
  /// <summary>
 /// Angle status. Used in <see cref="PowerMACS.BoltData"/>.
@@ -1313,6 +1314,7 @@ pub enum Strategy
 ///     <item>002 = a system running presses instead of spindles.</item>
 /// </list>
 /// </summary>
+#[repr(i32)]
 pub enum SystemSubType
 {
     NoSubtypeExists = 0,
@@ -1331,6 +1333,7 @@ pub enum SystemSubType
 ///     <item>004 = Micro Torque Focus 6000</item>
 /// </list>
 /// </summary>
+#[repr(i32)]
 pub enum SystemType
 {
     SystemTypeNotSet = 0,
