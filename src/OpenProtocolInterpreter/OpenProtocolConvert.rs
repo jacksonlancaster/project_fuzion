@@ -32,12 +32,28 @@ impl OpenProtocolConvertT {
         value.to_string()
     }
 
-    pub fn tp_to_string(paddingChar:char, size:i32, orientation:PaddingOrientation, value:i32)->String {
-        Self::truncate_padded(paddingChar, size, orientation, Self::int32_to_string(value))
+    pub fn tp_i32_to_string(padding_char:char, size:i32, orientation:PaddingOrientation, value:i32)->String {
+        Self::truncate_padded(padding_char, size, orientation, Self::int32_to_string(value))
     }
 
     pub fn truncate_padded(padding_char:char, size:i32, orientation:PaddingOrientation, value:String)->String {
 
         String::new()
     }
+
+    pub fn string_to_int64(value:String) ->i64 {
+        let converted_value = value.parse::<i64>().unwrap();
+        return converted_value;
+    }
+
+    pub fn int64_to_string(value:i64)->String {
+        value.to_string()
+    }
+
+    pub fn tp_i64_to_string(padding_char:char, size:i32, orientation:PaddingOrientation, value:i64)->String {
+            //=> TruncatePadded(padding_char, size, orientation, ToString(value));
+            Self::truncate_padded(padding_char, size, orientation, Self::int64_to_string(value))
+    }
+
+
 }
