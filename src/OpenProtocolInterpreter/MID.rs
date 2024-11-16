@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use substring::Substring;
 
-#[derive(Default, Clone /*, Copy, Clone*/)]
+#[derive(Default, Clone /*, Copy*/)]
 pub struct MidT {
     pub header:HeaderT,
     revisions_by_fields:HashMap<i32, Vec<DataFieldT>>
@@ -14,6 +14,10 @@ pub struct MidT {
 impl MidT {
 
         const DEFAULT_REVISION: i32 = 1;
+
+        fn clone_revisions_by_fields(&self) -> HashMap<i32, Vec<DataFieldT>> {
+            self.revisions_by_fields.clone()
+        }
 
         pub fn new(hdr:HeaderT) -> Self {
             //RevisionsByFields = new SafeAccessRevisionsFields(RegisterDatafields());
@@ -158,10 +162,9 @@ impl MidT {
             bytes
         }
 
-        pub fn  get_field(self, revision:i32, field:i32) ->DataFieldT
+        pub fn  get_field(&mut self, revision:i32, field:i32) ->DataFieldT
         {
             let result:DataFieldT;
-
             if !self.revisions_by_fields.contains_key(&revision) {
                 result = DataFieldT::default();
             } else {
@@ -172,11 +175,10 @@ impl MidT {
                                 .cloned()
                                 .unwrap_or(DataFieldT::default());
             }
-
             result
         }
 
-        fn get_field2<TEnum>(self, revision:i32, field:TEnum) -> DataFieldT 
+        fn get_field2<TEnum>(&mut self, revision:i32, field:TEnum) -> DataFieldT 
             where 
                 TEnum: Hash
         {

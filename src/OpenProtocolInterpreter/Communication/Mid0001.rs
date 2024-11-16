@@ -16,7 +16,7 @@ enum DataFields
     UseKeepAlive
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone/*, Copy*/)]
 pub struct Mid0001T { //:Mid, ICommunication, IIntegrator, IAnswerableBy<Mid0002>, IDeclinableCommand
     //optional_keep_alive: bool,
     pub mid:MidT,
@@ -58,8 +58,8 @@ impl Mid0001T {
 
         }
 
-        pub fn set_optional_keep_alive(self, value: bool) {
-            self.clone().mid.get_field(7, DataFields::UseKeepAlive as i32).set_value2(OpenProtocolConvertT::tp_bool_to_string, value);
+        pub fn set_optional_keep_alive(&mut self, value: bool) {
+            self.mid.get_field(7, DataFields::UseKeepAlive as i32).set_value2(OpenProtocolConvertT::tp_bool_to_string, value);
         }
 
         pub fn new() -> Self {

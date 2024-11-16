@@ -4,13 +4,12 @@ use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 use std::any::type_name;
 use std::clone::Clone;
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct DataFieldT {
     _padding_char:char,
     _padding_orientation:PaddingOrientation,
-    //cached_value:Option<Box<dyn Any>>,
     cached_value:Option<Utils::ClnBox>,
-    default:Box<DataFieldT>, 
+    default:Option<Box<DataFieldT>>, 
     pub has_prefix:bool,
     pub field:i32,
     pub index:i32,
@@ -20,16 +19,34 @@ pub struct DataFieldT {
     pub total_size:i32
 }
 
+impl Default for DataFieldT {
+    fn default() -> Self {
+        DataFieldT {
+            _padding_char:' ',
+            _padding_orientation:PaddingOrientation::RightPadded,
+            cached_value:None,
+            default:None,
+            has_prefix:true,
+            field : -1,
+            index : -1,
+            size:-1,
+            value : "".to_string(),
+            raw_value:vec![],
+            total_size:0
+        }
+    }
+}
+
 impl DataFieldT {
     const  DF_BOX_NONE: Option<Box<DataFieldT>> = None;
 
     fn set_default(&mut self) {
  
-        self.default = Box::new(Self {
+        let mut bx_df = Box::new(Self {
             _padding_char:' ',
             _padding_orientation:PaddingOrientation::RightPadded,
             cached_value:None,
-            default:DataFieldT::DF_BOX_NONE.unwrap(),
+            default:None,
             has_prefix:true,
             field : -1,
             index : -1,
@@ -39,7 +56,8 @@ impl DataFieldT {
             total_size:0
         });
 
-        self.default.cal_total_size();
+        bx_df.cal_total_size();
+        self.default = Some(bx_df);
     }
 
     fn cal_total_size(&mut self) {
@@ -51,7 +69,7 @@ impl DataFieldT {
                 _padding_char:' ',
                 _padding_orientation:PaddingOrientation::RightPadded,
                 cached_value:None,
-                default:DataFieldT::DF_BOX_NONE.unwrap(),
+                default:None,
                 has_prefix:has_prefix.unwrap_or(true),
                 field,
                 index,
@@ -73,7 +91,7 @@ impl DataFieldT {
             _padding_char:' ',
             _padding_orientation:PaddingOrientation::RightPadded,
             cached_value:None,
-            default:DataFieldT::DF_BOX_NONE.unwrap(),
+            default:None,
             has_prefix:has_prefix.unwrap_or(true),
             field : Utils::get_hash_code(field),
             index,
@@ -94,7 +112,7 @@ impl DataFieldT {
                 _padding_char:padding_char,
                 _padding_orientation:padding_orientation.unwrap_or(PaddingOrientation::RightPadded),
                 cached_value:None,
-                default:DataFieldT::DF_BOX_NONE.unwrap(),
+                default:None,
                 has_prefix:has_prefix.unwrap_or(true),
                 field, 
                 index,
@@ -115,7 +133,7 @@ impl DataFieldT {
                 _padding_char:padding_char,
                 _padding_orientation:padding_orientation.unwrap_or(PaddingOrientation::RightPadded),
                 cached_value:None,
-                default:DataFieldT::DF_BOX_NONE.unwrap(),
+                default:None,
                 has_prefix:has_prefix.unwrap_or(true),
                 field : Utils::get_hash_code(field),
                 index,
