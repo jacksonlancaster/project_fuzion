@@ -97,7 +97,7 @@ impl MidT {
             rvf
         }
 
-        fn process_header(self, package:String) -> HeaderT {
+        pub(crate) fn process_header(&mut self, package:String) -> HeaderT {
             HeaderT::process_header(package)
         }
 
@@ -114,7 +114,7 @@ impl MidT {
             self.parse2(pack)
         }
 
-        fn process_data_fields(&mut self, package:String)
+        pub(crate) fn process_data_fields(&mut self, package:String)
         {
             if self.revisions_by_fields.is_empty() {
                 return;

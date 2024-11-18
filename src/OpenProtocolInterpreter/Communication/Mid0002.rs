@@ -239,7 +239,7 @@ impl Mid0002T {
         Self::new_header(h)
     }
 
-    fn register_datafields() -> HashMap<i32, Vec<DataFieldT>> {
+    pub(crate) fn register_datafields() -> HashMap<i32, Vec<DataFieldT>> {
         let mut hm:HashMap<i32, Vec<DataFieldT>>  = HashMap::new();
         let mut v1:Vec<DataFieldT>= Vec::new();
         v1.push(DataFieldT::number(DataFields::CellId as i32, 20, 4, Some(true)));

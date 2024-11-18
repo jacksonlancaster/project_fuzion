@@ -607,6 +607,7 @@ pub enum DisableType
 /// <summary>
 /// <see cref="Communication.Mid0004"/> possible errors.
 /// </summary>
+#[repr(i32)]
 pub enum Error
 {
     NoError = 00,
