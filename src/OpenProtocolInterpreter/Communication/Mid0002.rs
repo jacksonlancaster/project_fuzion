@@ -238,6 +238,11 @@ impl Mid0002T {
         h.revision = revision;
         Self::new_header(h)
     }
+    
+    pub fn pack(&mut self) ->String
+    {
+        self.mid.pack()
+    }
 
     pub(crate) fn register_datafields() -> HashMap<i32, Vec<DataFieldT>> {
         let mut hm:HashMap<i32, Vec<DataFieldT>>  = HashMap::new();

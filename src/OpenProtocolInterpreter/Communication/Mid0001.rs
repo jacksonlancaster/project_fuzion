@@ -75,6 +75,10 @@ impl Mid0001T {
             Self{mid:MidT::new(hdr1), ..Default::default()}
         }
 
+        pub fn pack(&mut self) ->String
+        {
+            self.mid.pack()
+        }
     
         fn register_datafields(self)->HashMap<i32, Vec<DataFieldT>> {
             let mut hmp:HashMap<i32, Vec<DataFieldT>> = HashMap::new();
