@@ -11,14 +11,19 @@ pub struct HeaderT {
     pub revision:i32,
     pub standardized_revision:i32,
     pub no_ack_flag:bool,
-    pub station_id:i32,
-    pub spindle_id:i32,
-    pub sequence_number:i32,
-    pub number_of_messages:i32,
-    pub message_number:i32
+    pub station_id:Option<i32>,
+    pub spindle_id:Option<i32>,
+    pub sequence_number:Option<i32>,
+    pub number_of_messages:Option<i32>,
+    pub message_number:Option<i32>
 }
 
 impl HeaderT {
+
+    pub fn standardized_revision(&mut self) -> i32 {
+        self.standardized_revision = if self.revision > 0 {self.revision} else {1};
+        self.standardized_revision
+    }
 
     pub fn parse_int(pkg:String) -> (bool, i32) {
         let mut value = 0;
@@ -42,47 +47,53 @@ impl HeaderT {
         let mut flag:bool;
         let mut value:i32;
 
+        let package = if package.len() < 20 {format!("{: <20}", package)} else {package};
+
         hdr.length = package.substring(0, 4).parse::<i32>().expect("Failed parsing integer value");
         hdr.mid = package.substring(4, 8).parse::<i32>().expect("Failed parsing integer value");
         (flag, value) = Self::is_not_empty_or_zero(package.substring(8, 11).to_string());
         hdr.revision = if flag {value} else {1};
         hdr.no_ack_flag = !Utils::is_null_or_white_space(package.substring(11, 12).to_string());
-        (parse_success, hdr.station_id) = Self::parse_int(package.substring(12, 14).to_string());
-        if !parse_success { 
-            hdr.station_id =1;
+        (parse_success, value) = Self::parse_int(package.substring(12, 14).to_string());
+        if parse_success {
+            hdr.station_id = Some(value);
+        } else { 
+            hdr.station_id =Some(1);
         }
-        (parse_success, hdr.spindle_id) = Self::parse_int(package.substring(14, 16).to_string());
-        if !parse_success { 
-            hdr.spindle_id =1;
+        (parse_success, value) = Self::parse_int(package.substring(14, 16).to_string());
+        if parse_success { 
+            hdr.spindle_id = Some(value);
+        } else {
+            hdr.spindle_id =Some(1);
         }
 
         (flag, value) = Self::is_not_empty_or_zero(package.substring(16, 18).to_string());
-        hdr.sequence_number = if flag {value} else {Default::default()};
+        hdr.sequence_number = Some(if flag {value} else {Default::default()});
         (flag, value) = Self::is_not_empty_or_zero(package.substring(18, 19).to_string());
-        hdr.number_of_messages = if flag {value} else {Default::default()};
+        hdr.number_of_messages = Some(if flag {value} else {Default::default()});
         (flag, value) = Self::is_not_empty_or_zero(package.substring(19, 20).to_string());
-        hdr.message_number = if flag {value} else {Default::default()};
+        hdr.message_number = Some(if flag {value} else {Default::default()});
 
         hdr
     }
 
+    pub fn enforce_revision_standardization(&mut self) {
+            self.revision = self.standardized_revision();
+    }
+
     pub fn to_string(&mut self) -> String {
-        let str_val;
+        let mut builder:String = String::new();
 
-        let no_ack_flag_str:String;
-
-        match self.no_ack_flag {
-            true => {
-                no_ack_flag_str = "1".to_string();
-            } 
-            false => {
-                no_ack_flag_str = " ".to_string();
-            }
-        }
-        str_val = format!("{}{}{}{}{}{}{}{}{}{}", self.length, self.mid, self.revision, self.standardized_revision,
-                                    no_ack_flag_str, self.station_id, self.spindle_id, self.sequence_number,
-                                    self.number_of_messages, self.message_number);
+        builder.push_str(format!("{:04}", self.length).as_str());
+        builder.push_str(format!("{:04}", self.mid).as_str());
+        builder.push_str(Utils::format_to_str(self.revision > 0, self.revision, 3).as_str());
+        builder.push_str(Utils::format_to_str(self.no_ack_flag, 1, 1).as_str());
+        builder.push_str(Utils::format_some_to_str(self.station_id, 2).as_str()); 
+        builder.push_str(Utils::format_some_to_str(self.spindle_id, 2).as_str());
+        builder.push_str(Utils::format_some_to_str(self.sequence_number, 2).as_str());
+        builder.push_str(Utils::format_some_to_str(self.number_of_messages, 2).as_str());
+        builder.push_str(Utils::format_some_to_str(self.message_number, 2).as_str());
         
-        str_val
+        builder
     }
 }

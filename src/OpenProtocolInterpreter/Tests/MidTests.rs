@@ -10,7 +10,19 @@ pub fn test_mid0001_1() {
     //MID 0001 Application Communication start
     let mut mid0001 = Mid0001T::new();
     mid0001.set_optional_keep_alive(true);
-    println!("Mid0001 = {}", mid0001.clone().pack());
+    println!("Mid0001 Test 1 = {}", mid0001.clone().pack());
+}
+
+pub fn test_mid0001_2() {
+    //MID 0001 Application Communication start
+    let mut mid0001 = Mid0001T::new();
+    mid0001.mid.header = mid0001.mid.process_header("00200001001".to_string());
+    println!("Mid0001 Test 2 = {}", mid0001.clone().pack());
+}
+
+pub fn test_mid0001_all() {
+    test_mid0001_1();
+    test_mid0001_2();
 }
 
 //Mid0002 Tests
@@ -21,7 +33,20 @@ pub fn test_mid0002_1() {
     mid0002.set_channel_id(1);
     mid0002.set_cell_id(1);
     mid0002.set_controller_name("Tool1".to_string());
-    println!("Mid0002 = {}", mid0002.clone().pack());
+    println!("Mid0002 Test 1 = {}", mid0002.clone().pack());
+}
+
+pub fn test_mid0002_2() {
+
+    //MID 0002 Application Communication start acknowledge
+    let mut mid0002 = Mid0002T::new();
+    mid0002.mid.header = mid0002.mid.process_header("00570002001 010001020103Tool1".to_string());
+    println!("Mid0002 Test 2 = {}", mid0002.clone().pack());
+}
+
+pub fn test_mid0002_all() {
+    test_mid0002_1();
+    test_mid0002_2();
 }
 
 //Mid0004 Tests

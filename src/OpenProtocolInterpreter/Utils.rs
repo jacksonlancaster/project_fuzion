@@ -30,6 +30,31 @@ pub fn to_ascii(bytes:&[u8])-> String {
     s
 }
 
+pub fn format_to_str<T>(fcond:bool, value:T, padding_width:usize)->String 
+    where
+    T: ToString,
+{
+    let formatted_val = if fcond {
+        format!("{:0width$}",value.to_string(), width = padding_width)
+    } else {
+        " ".repeat(padding_width)
+    };
+
+    formatted_val
+}
+
+pub fn format_some_to_str<T>(value:Option<T>, padding_width:usize)->String 
+    where
+    T: ToString,
+{
+    let formatted_val = match value {
+        Some(v) =>    format!("{:0width$}",v.to_string(), width = padding_width),
+        None => " ".repeat(padding_width),
+    };
+
+    formatted_val
+}
+
 #[macro_export]
     macro_rules! ToBytes {
         ($($x:expr),* ) => {
@@ -99,4 +124,5 @@ impl ClnBox {
     pub fn downcast_ref<T: Any>(&self) -> Option<&T> {
         self.as_any().downcast_ref::<T>()
     }
+
 }
