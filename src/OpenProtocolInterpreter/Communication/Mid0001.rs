@@ -7,7 +7,7 @@ use crate::OpenProtocolInterpreter::Header::{self, HeaderT};
 use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 use crate::OpenProtocolInterpreter::MID::MidT;
 use crate::OpenProtocolInterpreter::Interfaces;
-use crate::OpenProtocolInterpreter::Enums::Error;
+use crate::OpenProtocolInterpreter::Enums;
 
 
 enum DataFields
@@ -38,8 +38,8 @@ impl Interfaces::IAnswerableBy<MidT> for Mid0001T {
 }
 
 impl Interfaces::IDeclinableCommand for Mid0001T {
-    fn documented_possible_errors(&self) -> Box<dyn Iterator<Item = Error> + '_> {
-        Box::new([Error::ClientAlreadyConnected, Error::MidRevisionUnsupported].into_iter())
+    fn documented_possible_errors(&self) -> Box<dyn Iterator<Item = Enums::Error> + '_> {
+        Box::new([Enums::Error::ClientAlreadyConnected, Enums::Error::MidRevisionUnsupported].into_iter())
     }
 }
 
@@ -47,10 +47,6 @@ impl Mid0001T {
 
 
         pub const MID:i32 = 1;
-
-        /*
-        public IEnumerable<Error> DocumentedPossibleErrors => new Error[] { Error.ClientAlreadyConnected, Error.MidRevisionUnsupported };
-        */
 
         // OptionalKeepAlive property with getter and setter methods
         pub fn optional_keep_alive(self) -> bool {
@@ -62,15 +58,16 @@ impl Mid0001T {
             self.mid.get_field(7, DataFields::UseKeepAlive as i32).set_value2(OpenProtocolConvertT::tp_bool_to_string, value);
         }
 
+        /*The following 4 methods are Common Methods to all MIDs  */
         pub fn new() -> Self {
-            Self::new3(Header::DEFAULT_REVISION)
+            Self::new_rev(Header::DEFAULT_REVISION)
         }
 
-        pub fn new2(hdr:HeaderT) -> Self {
+        pub fn new_header(hdr:HeaderT) -> Self {
             Self{mid:MidT::new(hdr), ..Default::default()}
         }
 
-        pub fn new3(revision:i32) -> Self {
+        pub fn new_rev(revision:i32) -> Self {
             let hdr1 = HeaderT{mid:Self::MID, revision:revision, ..Default::default()};
             Self{mid:MidT::new(hdr1), ..Default::default()}
         }
@@ -79,6 +76,7 @@ impl Mid0001T {
         {
             self.mid.pack()
         }
+        /* Common methods end here */
     
         fn register_datafields(self)->HashMap<i32, Vec<DataFieldT>> {
             let mut hmp:HashMap<i32, Vec<DataFieldT>> = HashMap::new();

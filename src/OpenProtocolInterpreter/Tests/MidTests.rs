@@ -3,6 +3,7 @@ use crate::OpenProtocolInterpreter::Communication::Mid0002::Mid0002T;
 use crate::OpenProtocolInterpreter::Communication::Mid0004::Mid0004T;
 use crate::OpenProtocolInterpreter::Communication::Mid0005::Mid0005T;
 use crate::OpenProtocolInterpreter::Communication::Mid0008::Mid0008T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -78,4 +79,13 @@ pub fn test_mid0008_1() {
    mid0008.set_subscription_mid("1202".to_string());
  
    println!("Mid0008 = {}", mid0008.clone().pack());
+}
+
+//Mid0010 Tests
+pub fn test_mid0010_1() {
+    
+    //Application Communication positive acknowledge
+   let mid0010:Mid0010T = Mid0010T::new();
+ 
+   println!("Mid0010 = {}", mid0010.clone().pack());
 }
