@@ -4,6 +4,7 @@ use crate::OpenProtocolInterpreter::Communication::Mid0004::Mid0004T;
 use crate::OpenProtocolInterpreter::Communication::Mid0005::Mid0005T;
 use crate::OpenProtocolInterpreter::Communication::Mid0008::Mid0008T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0011::Mid0011T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -58,7 +59,21 @@ pub fn test_mid0004_1() {
     mid0004.set_failed_mid(18);
     mid0004.set_error_code(Enums::Error::ParameterSetIdNotPresent);
   
-    println!("Mid0004 = {}", mid0004.clone().pack());
+    println!("Mid0004 Test 1 = {}", mid0004.clone().pack());
+}
+
+pub fn test_mid0004_2() {
+
+    //Application Communication negative acknowledge
+    let mut mid0004:Mid0004T = Mid0004T::new();
+
+    mid0004.mid.header = mid0004.mid.process_header("00260004001 001802".to_string());
+    println!("Mid0004 Test 2 = {}", mid0004.clone().pack());
+}
+
+pub fn test_mid0004_all() {
+    test_mid0004_1();
+    test_mid0004_2();
 }
 
 //Mid0005 Tests
@@ -88,4 +103,26 @@ pub fn test_mid0010_1() {
    let mid0010:Mid0010T = Mid0010T::new();
  
    println!("Mid0010 = {}", mid0010.clone().pack());
+}
+
+//Mid0011 Tests
+pub fn test_mid0011_1() {
+     //Parameter set ID upload reply
+     let mut mid0011 = Mid0011T::new();
+     mid0011.parameter_sets = vec![1, 2];
+
+     println!("Mid0011 Test 1 = {}", mid0011.clone().pack());
+}
+
+pub fn test_mid0011_2() {
+
+    //MID 0002 Application Communication start acknowledge
+    let mut mid0011 = Mid0011T::new();
+    mid0011.mid.header = mid0011.mid.process_header("00290011001 002001002".to_string());
+    println!("Mid0011 Test 2 = {}", mid0011.clone().pack());
+}
+
+pub fn test_mid0011_all() {
+    test_mid0011_1();
+    test_mid0011_2();
 }

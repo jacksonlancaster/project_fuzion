@@ -1,5 +1,3 @@
-const MID:i32 = 1;
-
 use std::collections::HashMap;
 use crate::OpenProtocolInterpreter::DataField::DataFieldT;
 
