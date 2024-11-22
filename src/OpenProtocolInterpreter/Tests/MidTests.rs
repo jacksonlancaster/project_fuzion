@@ -5,6 +5,7 @@ use crate::OpenProtocolInterpreter::Communication::Mid0005::Mid0005T;
 use crate::OpenProtocolInterpreter::Communication::Mid0008::Mid0008T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0011::Mid0011T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0014::Mid0014T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -86,23 +87,64 @@ pub fn test_mid0005_1() {
     println!("Mid0005 = {}", mid0005.clone().pack());
 }
 
+pub fn test_mid0005_2() {
+
+    //Application Communication positive acknowledge
+    let mut mid0005:Mid0005T = Mid0005T::new();
+
+    mid0005.mid.header = mid0005.mid.process_header("00240005001 0018".to_string());
+    println!("Mid0005 Test 2 = {}", mid0005.clone().pack());
+}
+
+pub fn test_mid0005_all() {
+    test_mid0005_1();
+    test_mid0005_2();
+}
+
 //Mid0008 Tests
 pub fn test_mid0008_1() {
     
-    //Application Communication positive acknowledge
+    //Application data message subscription
    let mut mid0008:Mid0008T = Mid0008T::new();
    mid0008.set_subscription_mid("1202".to_string());
  
    println!("Mid0008 = {}", mid0008.clone().pack());
 }
 
+pub fn test_mid0008_2() {
+
+    //Application data message subscription
+    let mut mid0008:Mid0008T = Mid0008T::new();
+
+    mid0008.mid.header = mid0008.mid.process_header("00290008001 1202".to_string());
+    println!("Mid0008 Test 2 = {}", mid0008.clone().pack());
+}
+
+pub fn test_mid0008_all() {
+    test_mid0008_1();
+    test_mid0008_2();
+}
+
 //Mid0010 Tests
 pub fn test_mid0010_1() {
     
-    //Application Communication positive acknowledge
+    //Parameter set ID upload request
    let mid0010:Mid0010T = Mid0010T::new();
  
    println!("Mid0010 = {}", mid0010.clone().pack());
+}
+
+pub fn test_mid0010_2() {
+
+    //Parameter set ID upload request
+    let mut mid0010 = Mid0010T::new();
+    mid0010.mid.header = mid0010.mid.process_header("00200010001".to_string());
+    println!("Mid0010 Test 2 = {}", mid0010.clone().pack());
+}
+
+pub fn test_mid0010_all() {
+    test_mid0010_1();
+    test_mid0010_2();
 }
 
 //Mid0011 Tests
@@ -116,7 +158,7 @@ pub fn test_mid0011_1() {
 
 pub fn test_mid0011_2() {
 
-    //MID 0002 Application Communication start acknowledge
+    //Parameter set ID upload reply
     let mut mid0011 = Mid0011T::new();
     mid0011.mid.header = mid0011.mid.process_header("00290011001 002001002".to_string());
     println!("Mid0011 Test 2 = {}", mid0011.clone().pack());
@@ -125,4 +167,26 @@ pub fn test_mid0011_2() {
 pub fn test_mid0011_all() {
     test_mid0011_1();
     test_mid0011_2();
+}
+
+
+//Mid0014 Tests
+pub fn test_mid0014_1() {
+    //Parameter set selected subscribe
+    let mid0014 = Mid0014T::new();
+
+    println!("Mid0014 Test 1 = {}", mid0014.clone().pack());
+}
+
+pub fn test_mid0014_2() {
+
+   //Parameter set selected subscribe
+   let mut mid0014 = Mid0014T::new();
+   mid0014.mid.header = mid0014.mid.process_header("00200014001".to_string());
+   println!("Mid0014 Test 2 = {}", mid0014.clone().pack());
+}
+
+pub fn test_mid0014_all() {
+   test_mid0014_1();
+   test_mid0014_2();
 }

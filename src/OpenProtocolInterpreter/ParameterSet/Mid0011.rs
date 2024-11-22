@@ -93,7 +93,6 @@ impl Mid0011T {
             return list;
         }
 
-
         pub(crate) fn register_datafields(&mut self)->HashMap<i32, Vec<DataFieldT>> {
             let mut hmp:HashMap<i32, Vec<DataFieldT>> = HashMap::new();
 
