@@ -1252,6 +1252,7 @@ pub enum ResultType
 /// <summary>
 /// Rotation directions. Used in <see cref="ParameterSet.Mid0013"/> and <see cref="ParameterSet.Mid0015"/>.
 /// </summary>
+#[repr(i32)]
 pub enum RotationDirection
 {
     Clockwise = 1,

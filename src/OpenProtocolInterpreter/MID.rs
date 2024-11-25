@@ -8,7 +8,7 @@ use substring::Substring;
 #[derive(Default, Clone /*, Copy*/)]
 pub struct MidT {
     pub header:HeaderT,
-    revisions_by_fields:HashMap<i32, Vec<DataFieldT>>
+    pub(crate) revisions_by_fields:HashMap<i32, Vec<DataFieldT>>
 }
 
 impl MidT {
@@ -32,7 +32,7 @@ impl MidT {
             Self{header:hdr, ..Default::default()}
         }
 
-        fn build_header(&mut self) -> String {
+        pub(crate) fn build_header(&mut self) -> String {
             if !self.revisions_by_fields.is_empty() {
                 self.header.length = 20;
                 let mut i:i32 = 1;
@@ -49,7 +49,7 @@ impl MidT {
             return self.header.to_string();
         }
 
-        pub fn pack(&mut self) -> String {
+        pub(crate) fn pack(&mut self) -> String {
             let header = self.build_header();
             if self.revisions_by_fields.is_empty() {
                 return header
@@ -67,7 +67,7 @@ impl MidT {
             return builder;
         }
 
-        fn pack2(&mut self, revision:i32, prefix_index:&mut i32) -> String {
+        pub(crate) fn pack2(&mut self, revision:i32, prefix_index:&mut i32) -> String {
             
             if !self.revisions_by_fields.contains_key(&revision) {
                 return "".to_string();
@@ -77,7 +77,7 @@ impl MidT {
             MidT::pack3(data_fields, prefix_index)
         }
 
-        fn pack3(data_fields:&Vec<DataFieldT>, prefix_index:&mut i32) -> String {
+        pub(crate) fn pack3(data_fields:&Vec<DataFieldT>, prefix_index:&mut i32) -> String {
             let mut builder = String::new();
             for data_field in data_fields {
                 if data_field.has_prefix {
@@ -91,7 +91,7 @@ impl MidT {
             return builder;
         }
 
-        fn register_datafields() ->HashMap<i32, Vec<DataFieldT>> {
+        pub(crate) fn register_datafields() ->HashMap<i32, Vec<DataFieldT>> {
             let rvf:HashMap<i32, Vec<DataFieldT>> = HashMap::new();
 
             rvf
@@ -128,7 +128,7 @@ impl MidT {
             }
         }
 
-        fn process_data_fields2(&mut self, revision:i32, package:String) {
+        pub(crate) fn process_data_fields2(&mut self, revision:i32, package:String) {
             if self.revisions_by_fields.contains_key(&revision) {
                 //let slf2: &mut Mid_t = self;
                 let mut fields: Vec<DataFieldT> = self.revisions_by_fields.get(&revision).unwrap().to_vec();
@@ -136,18 +136,18 @@ impl MidT {
             }
         }
 
-        fn process_data_fields3(self, data_fields:&mut Vec<DataFieldT>, package:String) {
+        pub(crate) fn process_data_fields3(self, data_fields:&mut Vec<DataFieldT>, package:String) {
             for dataField in data_fields {
                 dataField.value = self.clone().get_value(dataField, package.clone());
             }
         }
 
-        pub fn get_value(self, field:&DataFieldT, package:String) -> String {
+        pub(crate) fn get_value(self, field:&DataFieldT, package:String) -> String {
                 let res = if field.has_prefix {package.substring(2 + field.index as usize, field.size as usize)} else {package.substring(field.index as usize, field.size as usize)};
                 res.to_string()
         }
 
-        fn get_value2(self, field:DataFieldT, package:&[u8]) -> Vec<u8>
+        pub(crate) fn get_value2(self, field:DataFieldT, package:&[u8]) -> Vec<u8>
         {
             let mut bytes:Vec<u8> = vec![0;field.size as usize];
             let index = if field.has_prefix { 2 + field.index} else {field.index};
@@ -162,7 +162,7 @@ impl MidT {
             bytes
         }
 
-        pub fn  get_field(&mut self, revision:i32, field:i32) ->DataFieldT
+        pub(crate) fn  get_field(&mut self, revision:i32, field:i32) ->DataFieldT
         {
             let result:DataFieldT;
             if !self.revisions_by_fields.contains_key(&revision) {
@@ -178,15 +178,14 @@ impl MidT {
             result
         }
 
-        fn get_field2<TEnum>(&mut self, revision:i32, field:TEnum) -> DataFieldT 
+        pub(crate) fn get_field2<TEnum>(&mut self, revision:i32, field:TEnum) -> DataFieldT 
             where 
                 TEnum: Hash
         {
             self.get_field(revision, Utils::get_hash_code(field))
         }
 
-        /*
-        fn ToAscii(bytes:&[u8])-> String {
+        pub(crate) fn to_ascii(bytes:&[u8])-> String {
             let s = match std::str::from_utf8(bytes) {
                 Ok(v)=> v.to_string(),
                 Err(_er) => "".to_string(),
@@ -195,9 +194,9 @@ impl MidT {
             s
         }
 
-        fn ToBytes(value:String)->&[u8] {
-             value.as_bytes()
+        pub(crate) fn to_bytes(value:String)->Vec<u8> {
+             value.as_bytes().to_vec()
         }
-        */
+    
 
     }

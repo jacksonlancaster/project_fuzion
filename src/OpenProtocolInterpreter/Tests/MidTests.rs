@@ -6,6 +6,7 @@ use crate::OpenProtocolInterpreter::Communication::Mid0008::Mid0008T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0011::Mid0011T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0014::Mid0014T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0015::Mid0015T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -189,4 +190,33 @@ pub fn test_mid0014_2() {
 pub fn test_mid0014_all() {
    test_mid0014_1();
    test_mid0014_2();
+}
+
+//Mid0015 Tests
+pub fn test_mid0015_1() {
+    //Parameter set selected subscribe
+    let mut mid0015 = Mid0015T::new();
+    mid0015.set_max_torque(2.3);
+    mid0015.set_min_torque(1.0);
+    mid0015.set_torque_final_target(2.2);
+    mid0015.set_parameter_set_name("PSET1".to_string());
+    mid0015.set_angle_final_target(500);
+    mid0015.set_max_angle(700);
+    mid0015.set_min_angle(400);
+    mid0015.set_parameter_set_id(1);
+    mid0015.set_rotation_direction(Enums::RotationDirection::Clockwise);
+    println!("Mid0015 Test 1 = {}", mid0015.clone().pack());
+}
+
+pub fn test_mid0015_2() {
+
+   //Parameter set selected subscribe
+   let mut mid0015 = Mid0015T::new();
+   mid0015.mid.header = mid0015.mid.process_header("00420015001 001".to_string());
+   println!("Mid0015 Test 2 = {}", mid0015.clone().pack());
+}
+
+pub fn test_mid0015_all() {
+   test_mid0015_1();
+   test_mid0015_2();
 }

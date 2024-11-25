@@ -64,7 +64,7 @@ impl Mid0011T {
         }
         /* Common methods end here */
     
-        pub(crate)  fn Parse(&mut self, package:String)->Self {
+        pub(crate)  fn parse(&mut self, package:String)->Self {
             self.mid.header = self.mid.process_header(package.clone());
 
             self.mid.get_field(1, DataFields::EachParameterSet as i32).size = self.mid.header.length - self.mid.get_field(1, DataFields::EachParameterSet as i32).index;
