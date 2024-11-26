@@ -169,7 +169,7 @@ impl Mid0015T {
         Self::new_header(hdr1)
     }
 
-    pub(crate) fn BuildHeader(&mut self)->String {
+    pub(crate) fn build_header(&mut self)->String {
         self.mid.header.length = 20;
 
         let data_fields = self.mid.revisions_by_fields.get(&self.mid.header.standardized_revision());

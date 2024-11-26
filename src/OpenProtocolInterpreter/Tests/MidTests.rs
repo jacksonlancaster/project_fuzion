@@ -7,6 +7,8 @@ use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0011::Mid0011T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0014::Mid0014T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0015::Mid0015T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0018::Mid0018T;
+use crate::OpenProtocolInterpreter::Job::Mid0031::Mid0031T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -194,7 +196,7 @@ pub fn test_mid0014_all() {
 
 //Mid0015 Tests
 pub fn test_mid0015_1() {
-    //Parameter set selected subscribe
+
     let mut mid0015 = Mid0015T::new();
     mid0015.set_max_torque(2.3);
     mid0015.set_min_torque(1.0);
@@ -210,7 +212,6 @@ pub fn test_mid0015_1() {
 
 pub fn test_mid0015_2() {
 
-   //Parameter set selected subscribe
    let mut mid0015 = Mid0015T::new();
    mid0015.mid.header = mid0015.mid.process_header("00420015001 001".to_string());
    println!("Mid0015 Test 2 = {}", mid0015.clone().pack());
@@ -219,4 +220,46 @@ pub fn test_mid0015_2() {
 pub fn test_mid0015_all() {
    test_mid0015_1();
    test_mid0015_2();
+}
+
+//Mid0018 Tests
+pub fn test_mid0018_1() {
+
+    let mut mid0018 = Mid0018T::new();
+
+    mid0018.set_parameter_set_id(1);
+
+    println!("Mid0018 Test 1 = {}", mid0018.mid.pack());
+}
+
+pub fn test_mid0018_2() {
+
+   let mut mid0018 = Mid0018T::new();
+   mid0018.mid.header = mid0018.mid.process_header("00230018001 001".to_string());
+   println!("Mid0018 Test 2 = {}", mid0018.mid.pack());
+}
+
+pub fn test_mid0018_all() {
+   test_mid0018_1();
+   test_mid0018_2();
+}
+
+//Mid0031 Tests
+pub fn test_mid0031_1() {
+
+    let mut mid0031 = Mid0031T::new();
+
+    println!("Mid0031 Test 1 = {}", mid0031.mid.pack());
+}
+
+pub fn test_mid0031_2() {
+
+   let mut mid0031 = Mid0031T::new();
+   mid0031.mid.header = mid0031.mid.process_header("00220031001 00".to_string());
+   println!("Mid0031 Test 2 = {}", mid0031.mid.pack());
+}
+
+pub fn test_mid0031_all() {
+   test_mid0031_1();
+   test_mid0031_2();
 }
