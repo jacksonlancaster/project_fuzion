@@ -9,6 +9,8 @@ use crate::OpenProtocolInterpreter::ParameterSet::Mid0014::Mid0014T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0015::Mid0015T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0018::Mid0018T;
 use crate::OpenProtocolInterpreter::Job::Mid0031::Mid0031T;
+use crate::OpenProtocolInterpreter::Tool::Mid0042::Mid0042T;
+use crate::OpenProtocolInterpreter::Tool::Mid0043::Mid0043T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -262,4 +264,46 @@ pub fn test_mid0031_2() {
 pub fn test_mid0031_all() {
    test_mid0031_1();
    test_mid0031_2();
+}
+
+//Mid0042 Tests
+pub fn test_mid0042_1() {
+    //disable tool
+    let mut mid0042 = Mid0042T::new();
+    mid0042.set_tool_number(1);
+    mid0042.set_disable_type(Enums::DisableType::Disable);
+    println!("Mid0042 Test 1 = {}", mid0042.mid.pack());
+}
+
+pub fn test_mid0042_2() {
+    // disable tool
+   let mut mid0042 = Mid0042T::new();
+   mid0042.mid.header = mid0042.mid.process_header("00200042001".to_string());
+   println!("Mid0042 Test 2 = {}", mid0042.mid.pack());
+}
+
+pub fn test_mid0042_all() {
+   test_mid0042_1();
+   test_mid0042_2();
+}
+
+
+//Mid0043 Tests
+pub fn test_mid0043_1() {
+    //disable tool
+    let mut mid0043 = Mid0043T::new();
+    mid0043.set_tool_number(1);
+    println!("Mid0043 Test 1 = {}", mid0043.mid.pack());
+}
+
+pub fn test_mid0043_2() {
+    // enable tool
+   let mut mid0043 = Mid0043T::new();
+   mid0043.mid.header = mid0043.mid.process_header("00200043001".to_string());
+   println!("Mid0043 Test 2 = {}", mid0043.mid.pack());
+}
+
+pub fn test_mid0043_all() {
+   test_mid0043_1();
+   test_mid0043_2();
 }

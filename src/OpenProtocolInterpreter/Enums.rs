@@ -584,6 +584,7 @@ pub enum DigitalInputNumber
 /// <summary>
 /// Disable types. Used in <see cref="Tool.Mid0042"/>.
 /// </summary>
+#[repr(i32)]
 pub enum DisableType
 {
     /// <summary>
