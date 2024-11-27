@@ -12,15 +12,8 @@
 /// <para>Answer: <see cref="Communication.Mid0005"/> Command accepted and <see cref="Mid0015"/> Parameter set selected</para>
 /// </summary>
 
-use std::collections::HashMap;
-use substring::Substring;
-
-use crate::OpenProtocolInterpreter::DataField::DataFieldT;
-
 use crate::OpenProtocolInterpreter::Header::{self, HeaderT};
-use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 use crate::OpenProtocolInterpreter::MID::MidT;
-use crate::OpenProtocolInterpreter::Enums;
 
 #[derive(Default, Clone)]
 pub struct Mid0014T { //:Mid, IParameterSet, IController

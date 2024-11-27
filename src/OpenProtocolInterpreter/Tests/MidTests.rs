@@ -11,6 +11,7 @@ use crate::OpenProtocolInterpreter::ParameterSet::Mid0018::Mid0018T;
 use crate::OpenProtocolInterpreter::Job::Mid0031::Mid0031T;
 use crate::OpenProtocolInterpreter::Tool::Mid0042::Mid0042T;
 use crate::OpenProtocolInterpreter::Tool::Mid0043::Mid0043T;
+use crate::OpenProtocolInterpreter::Vin::Mid0050::Mid0050T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -306,4 +307,24 @@ pub fn test_mid0043_2() {
 pub fn test_mid0043_all() {
    test_mid0043_1();
    test_mid0043_2();
+}
+
+//Mid0050 Tests
+pub fn test_mid0050_1() {
+    //MID 0050 Vehicle ID Number download request
+    let mut mid0050 = Mid0050T::new();
+    mid0050.set_vin_number("123456".to_string());
+    println!("Mid0050 Test 1 = {}", mid0050.mid.pack());
+}
+
+pub fn test_mid0050_2() {
+    //MID 0050 Vehicle ID Number download request
+   let mut mid0050 = Mid0050T::new();
+   mid0050.mid.header = mid0050.mid.process_header("00260050001 123456".to_string());
+   println!("Mid0050 Test 2 = {}", mid0050.mid.pack());
+}
+
+pub fn test_mid0050_all() {
+   test_mid0050_1();
+   test_mid0050_2();
 }

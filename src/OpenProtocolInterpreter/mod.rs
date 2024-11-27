@@ -12,3 +12,4 @@ pub mod Interfaces;
 pub mod ParameterSet;
 pub mod Job;
 pub mod Tool;
+pub mod Vin;
