@@ -130,7 +130,7 @@ impl MidT {
 
         pub(crate) fn process_data_fields2(&mut self, revision:i32, package:String) {
             if self.revisions_by_fields.contains_key(&revision) {
-                //let slf2: &mut Mid_t = self;
+
                 let mut fields: Vec<DataFieldT> = self.revisions_by_fields.get(&revision).unwrap().to_vec();
                 self.clone().process_data_fields3(&mut fields, package);
             }

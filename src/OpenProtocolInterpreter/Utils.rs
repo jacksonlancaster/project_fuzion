@@ -55,6 +55,28 @@ pub fn format_some_to_str<T>(value:Option<T>, padding_width:usize)->String
     formatted_val
 }
 
+pub fn format_i32_to_str(fcond:bool, value:i32, padding_width:usize)->String
+{
+    let formatted_val = if fcond {
+        format!("{:0width$}", value, width = padding_width)
+    } else {
+        " ".repeat(padding_width)
+    };
+
+    formatted_val
+}
+
+pub fn format_some_i32_to_str(value:Option<i32>, padding_width:usize)->String
+{
+    let formatted_val = match value {
+        Some(v) =>    format!("{:0width$}", v, width = padding_width),
+        None => " ".repeat(padding_width),
+    };
+
+    formatted_val
+}
+
+
 #[macro_export]
     macro_rules! ToBytes {
         ($($x:expr),* ) => {

@@ -4,7 +4,7 @@ use std::default::Default;
 
 pub const DEFAULT_REVISION:i32 = 1;
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone/*, Default*/)]
 pub struct HeaderT {
     pub length:i32,
     pub mid:i32,
@@ -16,6 +16,23 @@ pub struct HeaderT {
     pub sequence_number:Option<i32>,
     pub number_of_messages:Option<i32>,
     pub message_number:Option<i32>
+}
+
+impl Default for HeaderT {
+    fn default() -> Self {
+        Self {
+            length:0,
+            mid:0,
+            revision:0,
+            standardized_revision:0,
+            no_ack_flag:false,
+            station_id: None,
+            spindle_id: None,
+            sequence_number: None,
+            number_of_messages: None,
+            message_number:None
+        }
+    }
 }
 
 impl HeaderT {
@@ -86,13 +103,13 @@ impl HeaderT {
 
         builder.push_str(format!("{:04}", self.length).as_str());
         builder.push_str(format!("{:04}", self.mid).as_str());
-        builder.push_str(Utils::format_to_str(self.revision > 0, self.revision, 3).as_str());
+        builder.push_str(Utils::format_i32_to_str(self.revision > 0, self.revision, 3).as_str());
         builder.push_str(Utils::format_to_str(self.no_ack_flag, 1, 1).as_str());
-        builder.push_str(Utils::format_some_to_str(self.station_id, 2).as_str()); 
-        builder.push_str(Utils::format_some_to_str(self.spindle_id, 2).as_str());
-        builder.push_str(Utils::format_some_to_str(self.sequence_number, 2).as_str());
-        builder.push_str(Utils::format_some_to_str(self.number_of_messages, 2).as_str());
-        builder.push_str(Utils::format_some_to_str(self.message_number, 2).as_str());
+        builder.push_str(Utils::format_some_i32_to_str(self.station_id, 2).as_str()); 
+        builder.push_str(Utils::format_some_i32_to_str(self.spindle_id, 2).as_str());
+        builder.push_str(Utils::format_some_i32_to_str(self.sequence_number, 2).as_str());
+        builder.push_str(Utils::format_some_i32_to_str(self.number_of_messages, 2).as_str());
+        builder.push_str(Utils::format_some_i32_to_str(self.message_number, 2).as_str());
         
         builder
     }
