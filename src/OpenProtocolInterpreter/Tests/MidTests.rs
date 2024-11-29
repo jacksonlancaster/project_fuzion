@@ -14,6 +14,8 @@ use crate::OpenProtocolInterpreter::Tool::Mid0043::Mid0043T;
 use crate::OpenProtocolInterpreter::Vin::Mid0050::Mid0050T;
 use crate::OpenProtocolInterpreter::Vin::Mid0051::Mid0051T;
 use crate::OpenProtocolInterpreter::Vin::Mid0052::Mid0052T;
+use crate::OpenProtocolInterpreter::Vin::Mid0053::Mid0053T;
+use crate::OpenProtocolInterpreter::Tightening::Mid0060::Mid0060T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -333,13 +335,13 @@ pub fn test_mid0050_all() {
 
 //Mid0051 Tests
 pub fn test_mid0051_1() {
-    //MID 0050 Vehicle ID Number download request
+    // MID 0051 Vehicle ID Number subscribe
     let mut mid0051 = Mid0051T::new();
     println!("Mid0051 Test 1 = {}", mid0051.mid.pack());
 }
 
 pub fn test_mid0051_2() {
-    //MID 0050 Vehicle ID Number download request
+    // MID 0051 Vehicle ID Number subscribe
    let mut mid0051 = Mid0051T::new();
    mid0051.mid.header = mid0051.mid.process_header("00200051001".to_string());
    println!("Mid0051 Test 2 = {}", mid0051.mid.pack());
@@ -352,14 +354,14 @@ pub fn test_mid0051_all() {
 
 //Mid0052 Tests
 pub fn test_mid0052_1() {
-    //MID 0050 Vehicle ID Number download request
+    //MID 0052 Vehicle ID Number
     let mut mid0052 = Mid0052T::new();
     mid0052.set_vin_number("123456".to_string());
     println!("Mid0052 Test 1 = {}", mid0052.mid.pack());
 }
 
 pub fn test_mid0052_2() {
-    //MID 0050 Vehicle ID Number download request
+    //MID 0052 Vehicle ID Number
    let mut mid0052 = Mid0052T::new();
    mid0052.mid.header = mid0052.mid.process_header("00450052001 123456".to_string());
    println!("Mid0052 Test 2 = {}", mid0052.mid.pack());
@@ -368,4 +370,42 @@ pub fn test_mid0052_2() {
 pub fn test_mid0052_all() {
    test_mid0052_1();
    test_mid0052_2();
+}
+
+//Mid0053 Tests
+pub fn test_mid0053_1() {
+    //MID 0050 Vehicle ID Number download request
+    let mut mid0053 = Mid0053T::new();
+    println!("Mid0053 Test 1 = {}", mid0053.mid.pack());
+}
+
+pub fn test_mid0053_2() {
+    //MID 0050 Vehicle ID Number download request
+   let mut mid0053 = Mid0053T::new();
+   mid0053.mid.header = mid0053.mid.process_header("00200053001".to_string());
+   println!("Mid0053 Test 2 = {}", mid0053.mid.pack());
+}
+
+pub fn test_mid0053_all() {
+   test_mid0053_1();
+   test_mid0053_2();
+}
+
+//Mid0060 Tests
+pub fn test_mid0060_1() {
+    //MID 0050 Vehicle ID Number download request
+    let mut mid0060 = Mid0060T::new();
+    println!("Mid0060 Test 1 = {}", mid0060.mid.pack());
+}
+
+pub fn test_mid0060_2() {
+    //MID 0050 Vehicle ID Number download request
+   let mut mid0060 = Mid0060T::new();
+   mid0060.mid.header = mid0060.mid.process_header("00200060001".to_string());
+   println!("Mid0060 Test 2 = {}", mid0060.mid.pack());
+}
+
+pub fn test_mid0060_all() {
+   test_mid0060_1();
+   test_mid0060_2();
 }
