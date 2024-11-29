@@ -18,11 +18,9 @@
 
 
 use crate::OpenProtocolInterpreter::MID::MidT;
-use crate::OpenProtocolInterpreter::Enums;
 use crate::OpenProtocolInterpreter::Header::{self, HeaderT};
 use std::collections::HashMap;
 use crate::OpenProtocolInterpreter::DataField::DataFieldT;
-use crate::OpenProtocolInterpreter::Interfaces;
 
 pub(crate)  enum DataFields
 {
@@ -127,10 +125,15 @@ impl Mid0052T {
         let mut hm:HashMap<i32, Vec<DataFieldT>>  = HashMap::new();
         
         let mut v1:Vec<DataFieldT>= Vec::new();
-        v1.push(DataFieldT::volatile3(DataFields::VinNumber as i32, 20, Some(false)));//dynamic
+        v1.push(DataFieldT::string2(DataFields::VinNumber as i32, 20, 25, Some(false)));
     
         hm.insert(1, v1);
 
+        let mut v2:Vec<DataFieldT>= Vec::new();
+        v2.push(DataFieldT::string2(DataFields::IdentifierResultPart2 as i32, 47, 25, None));
+        v2.push(DataFieldT::string2(DataFields::IdentifierResultPart3 as i32, 74, 25, None));
+        v2.push(DataFieldT::string2(DataFields::IdentifierResultPart4 as i32, 101, 25, None));
+        hm.insert(2, v2);
         hm
     }
 }

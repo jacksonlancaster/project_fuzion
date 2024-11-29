@@ -13,6 +13,7 @@ use crate::OpenProtocolInterpreter::Tool::Mid0042::Mid0042T;
 use crate::OpenProtocolInterpreter::Tool::Mid0043::Mid0043T;
 use crate::OpenProtocolInterpreter::Vin::Mid0050::Mid0050T;
 use crate::OpenProtocolInterpreter::Vin::Mid0051::Mid0051T;
+use crate::OpenProtocolInterpreter::Vin::Mid0052::Mid0052T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -347,4 +348,24 @@ pub fn test_mid0051_2() {
 pub fn test_mid0051_all() {
    test_mid0051_1();
    test_mid0051_2();
+}
+
+//Mid0052 Tests
+pub fn test_mid0052_1() {
+    //MID 0050 Vehicle ID Number download request
+    let mut mid0052 = Mid0052T::new();
+    mid0052.set_vin_number("123456".to_string());
+    println!("Mid0052 Test 1 = {}", mid0052.mid.pack());
+}
+
+pub fn test_mid0052_2() {
+    //MID 0050 Vehicle ID Number download request
+   let mut mid0052 = Mid0052T::new();
+   mid0052.mid.header = mid0052.mid.process_header("00450052001 123456".to_string());
+   println!("Mid0052 Test 2 = {}", mid0052.mid.pack());
+}
+
+pub fn test_mid0052_all() {
+   test_mid0052_1();
+   test_mid0052_2();
 }
