@@ -38,6 +38,7 @@ pub enum BatchMode
 /// <summary>
 /// Batch Status. Used in <see cref="Tightening.Mid0061"/> and <see cref="Tightening.Mid0065"/>.
 /// </summary>
+#[repr(i32)]
 pub enum BatchStatus
 {
     Nok = 0,
@@ -1276,6 +1277,7 @@ pub enum StatusInWorkOrder
 /// <summary>
 /// Strategies. Used in <see cref="Tightening.Mid0061"/> and <see cref="Tightening.Mid0065"/>.
 /// </summary>
+#[repr(i32)]
 pub enum Strategy
 {
     TorqueControl = 1,
@@ -1358,6 +1360,7 @@ pub enum TighteningDirection
 /// <summary>
 /// Tightening value status. Used in <see cref="Tightening.Mid0061"/> and <see cref="Tightening.Mid0065"/>.
 /// </summary>
+#[repr(i32)]
 pub enum TighteningValueStatus
 {
     Low = 0,
