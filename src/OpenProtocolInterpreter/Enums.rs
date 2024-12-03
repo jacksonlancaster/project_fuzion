@@ -924,6 +924,7 @@ pub enum PairingStatus
 /// <summary>
 /// Post View Torque. Used in <see cref="Tightening.Mid0065"/>.
 /// </summary>
+#[repr(i32)]
 pub enum PostViewTorque
 {
     Off = 0,
@@ -1237,6 +1238,7 @@ pub enum Reserved
 /// <summary>
 /// Result types. Used in <see cref="Tightening.Mid0061"/> and <see cref="Tightening.Mid0065"/>.
 /// </summary>
+#[repr(i32)]
 pub enum ResultType
 {
     Tightening = 1,
@@ -1449,6 +1451,7 @@ pub enum TorqueStatus
 /// <summary>
 /// Torque values unit. Used in <see cref="Tightening.Mid0061"/> and <see cref="Tightening.Mid0065"/>.
 /// </summary>
+#[repr(i32)]
 pub enum TorqueValuesUnit
 {
     Nm = 1,

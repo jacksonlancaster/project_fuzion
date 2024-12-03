@@ -104,6 +104,25 @@ impl OpenProtocolConvertT {
         Self::truncate_padded(padding_char, size, orientation, Self::int32_to_string(value))
     }
 
+    pub fn get_bit(b:u8, bit_number:i32)->bool {
+        (b & (1 << (bit_number - 1))) != 0
+    }
+
+    pub fn bool_to_byte(values:Vec<bool>)->u8
+    {
+        let mut result:u8 = 0;
+        let mut index:usize = 9 - values.len();
+     
+        for b in values {
+            if b {
+                result |= (1 << (index - 1)) as u8;
+            }
+            index +=1;
+        }
+
+        result
+    }
+
     pub fn truncate_padded(padding_char:char, size:i32, orientation:PaddingOrientation, value:String)->String {
 
         String::new()
