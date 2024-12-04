@@ -11,8 +11,9 @@ use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 
 use crate::OpenProtocolInterpreter::MID::MidT;
 use crate::OpenProtocolInterpreter::Header::{self, HeaderT};
-
 use super::StageResult::StageResultT;
+use super::StrategyOptions::StrategyOptionsT;
+use super::TighteningErrorStatus::{TighteningErrorStatus2T, TighteningErrorStatusT};
 
 pub(crate)  enum DataFields
 {
@@ -112,10 +113,9 @@ pub(crate)  enum DataFields
 #[derive(Clone)]
 pub struct Mid0061T { //:Mid, ITightening, IController, IAcknowledgeable<Mid0062>
     pub mid:MidT,
-    /* TBD */
-    //pub StrategyOptions:StrategyOptionsT,
-    //pub TighteningErrorStatus:Enums::TighteningErrorStatus,
-    //pub TighteningErrorStatus2:Enums::TighteningErrorStatus2,
+    pub strategy_options:StrategyOptionsT,
+    pub tightening_error_status:TighteningErrorStatusT,
+    pub tightening_error_status2:TighteningErrorStatus2T,
     pub stage_results:Vec<StageResultT>,
 }
 
