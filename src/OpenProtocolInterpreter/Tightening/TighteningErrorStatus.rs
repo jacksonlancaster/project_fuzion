@@ -8,135 +8,137 @@ use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 pub struct TighteningErrorStatusT
 {
     //Byte 0
-    pub RundownAngleMaxShutOff:bool,
-    pub RundownAngleMinShutOff:bool,
-    pub TorqueMaxShutOff:bool,
-    pub AngleMaxShutOff:bool,
-    pub SelftapTorqueMaxShutOff:bool,
-    pub SelftapTorqueMinShutOff:bool,
-    pub PrevailTorqueMaxShutOff:bool,
-    pub PrevailTorqueMinShutOff:bool,
+    pub rundown_angle_max_shut_off:bool,
+    pub rundown_angle_min_shut_off:bool,
+    pub torque_max_shut_off:bool,
+    pub angle_max_shut_off:bool,
+    pub selftap_torque_max_shut_off:bool,
+    pub selftap_torque_min_shut_off:bool,
+    pub prevail_torque_max_shut_off:bool,
+    pub prevail_torque_min_shut_off:bool,
 
     //Byte 1
-    pub PrevailTorqueCompensateOverflow:bool,
-    pub CurrentMonitoringMaxShutOff:bool,
-    pub PostViewTorqueMinTorqueShutOff:bool,
-    pub PostViewTorqueMaxTorqueShutOff:bool,
-    pub PostViewTorqueAngleTooSmall:bool,
-    pub TriggerLost:bool,
-    pub TorqueLessThanTarget:bool,
-    pub ToolHot:bool,
+    pub prevail_torque_compensate_overflow:bool,
+    pub current_monitoring_max_shut_off:bool,
+    pub post_view_torque_min_torque_shut_off:bool,
+    pub post_view_torque_max_torque_shut_off:bool,
+    pub post_view_torque_angle_too_small:bool,
+    pub trigger_lost:bool,
+    pub torque_less_than_target:bool,
+    pub tool_hot:bool,
 
     //Byte 2
-    pub MultistageAbort:bool,
-    pub Rehit:bool,
-    pub DsMeasureFailed:bool,
-    pub CurrentLimitReached:bool,
-    pub EndTimeOutShutOff:bool,
-    pub RemoveFastenerLimitExceeded:bool,
-    pub DisableDrive:bool,
-    pub TransducerLost:bool,
+    pub multistage_abort:bool,
+    pub rehit:bool,
+    pub ds_measure_failed:bool,
+    pub current_limit_reached:bool,
+    pub end_time_out_shut_off:bool,
+    pub remove_fastener_limit_exceeded:bool,
+    pub disable_drive:bool,
+    pub transducer_lost:bool,
 
     //Byte 3
-    pub TransducerShorted:bool,
-    pub TransducerCorrupt:bool,
-    pub SyncTimeout:bool,
-    pub DynamicCurrentMonitoringMin:bool,
-    pub DynamicCurrentMonitoringMax:bool,
-    pub AngleMaxMonitor:bool,
-    pub YieldNutOff:bool,
-    pub YieldTooFewSamples:bool,
+    pub transducer_shorted:bool,
+    pub transducer_corrupt:bool,
+    pub sync_timeout:bool,
+    pub dynamic_current_monitoring_min:bool,
+    pub dynamic_current_monitoring_max:bool,
+    pub angle_max_monitor:bool,
+    pub yield_nut_off:bool,
+    pub yield_too_few_samples:bool,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct TighteningErrorStatus2T
 {
-    pub DriveDeactivated:bool,
-    pub ToolStall:bool,
-    pub DriveHot:bool,
-    pub GradientMonitoringHigh:bool,
-    pub GradientMonitoringLow:bool,
-    pub ReactionBarFailed:bool,
-    pub SnugMax:bool,
-    pub CycleAbort:bool,
-    pub NeckingFailure:bool,
-    pub EffectiveLoosening:bool,
-    pub OverSpeed:bool,
-    pub NoResidualTorque:bool,
-    pub PositioningFail:bool,
-    pub SnugMonLow:bool,
-    pub SnugMonHigh:bool,
-    pub DynamicMinCurrent:bool,
-    pub DynamicMaxCurrent:bool,
-    pub LatentResult:bool,
+    pub drive_deactivated:bool,
+    pub tool_stall:bool,
+    pub drive_hot:bool,
+    pub gradient_monitoring_high:bool,
+    pub gradient_monitoring_low:bool,
+    pub reaction_bar_failed:bool,
+    pub snug_max:bool,
+    pub cycle_abort:bool,
+    pub necking_failure:bool,
+    pub effective_loosening:bool,
+    pub over_speed:bool,
+    pub no_residual_torque:bool,
+    pub positioning_fail:bool,
+    pub snug_mon_low:bool,
+    pub snug_mon_high:bool,
+    pub dynamic_min_current:bool,
+    pub dynamic_max_current:bool,
+    pub latent_result:bool,
 
     //Bit 19-31
-    pub Reserved:Vec<u8>,
+    pub reserved:[u8; 10], //Vec<u8>,
 }
 
 impl TighteningErrorStatusT {
-    pub fn Pack(&mut self)->String
+    pub fn pack(&mut self)->String
     {
-        byte[] bytes = PackBytes();
-        return Encoding.ASCII.GetString(bytes);
+        let bytes = self.pack_bytes();
+        std::str::from_utf8(&bytes).expect("Invalid ASCII").to_string()
     }
 
-    pub fn PackBytes(&mut self)->Vec<u8> {
+    pub fn pack_bytes(&mut self)->Vec<u8> {
 
         let mut bytes:[u8;10]=[0;10];
         bytes[0] = OpenProtocolConvertT::bool_to_byte(vec!
         [
-            self.RundownAngleMaxShutOff,
-            self.RundownAngleMinShutOff,
-            self.TorqueMaxShutOff,
-            self.AngleMaxShutOff,
-            self.SelftapTorqueMaxShutOff,
-            self.SelftapTorqueMinShutOff,
-            self.PrevailTorqueMaxShutOff,
-            self.PrevailTorqueMinShutOff
+            self.rundown_angle_max_shut_off,
+            self.rundown_angle_min_shut_off,
+            self.torque_max_shut_off,
+            self.angle_max_shut_off,
+            self.selftap_torque_max_shut_off,
+            self.selftap_torque_min_shut_off,
+            self.prevail_torque_max_shut_off,
+            self.prevail_torque_min_shut_off
         ]);
         bytes[1] = OpenProtocolConvertT::bool_to_byte(vec!
         [
-                self.PrevailTorqueCompensateOverflow ,
-                self.CurrentMonitoringMaxShutOff,
-                self.PostViewTorqueMinTorqueShutOff,
-                self.PostViewTorqueMaxTorqueShutOff,
-                self.PostViewTorqueAngleTooSmall,
-                self.TriggerLost,
-                self.TorqueLessThanTarget,
-                self.ToolHot
+                self.prevail_torque_compensate_overflow ,
+                self.current_monitoring_max_shut_off,
+                self.post_view_torque_min_torque_shut_off,
+                self.post_view_torque_max_torque_shut_off,
+                self.post_view_torque_angle_too_small,
+                self.trigger_lost,
+                self.torque_less_than_target,
+                self.tool_hot
         ]);
         bytes[2] = OpenProtocolConvertT::bool_to_byte(vec!
         [
-            self.MultistageAbort,
-            self.Rehit,
-            self.DsMeasureFailed,
-            self.CurrentLimitReached,
-            self.EndTimeOutShutOff,
-            self.RemoveFastenerLimitExceeded,
-            self.DisableDrive,
-            self.TransducerLost
+            self.multistage_abort,
+            self.rehit,
+            self.ds_measure_failed,
+            self.current_limit_reached,
+            self.end_time_out_shut_off,
+            self.remove_fastener_limit_exceeded,
+            self.disable_drive,
+            self.transducer_lost
         ]);
         bytes[3] = OpenProtocolConvertT::bool_to_byte(vec!
         [
-            self.TransducerShorted,
-            self.TransducerCorrupt,
-            self.SyncTimeout,
-            self.DynamicCurrentMonitoringMin,
-            self.DynamicCurrentMonitoringMax,
-            self.AngleMaxMonitor,
-            self.YieldNutOff,
-            self.YieldTooFewSamples
+            self.transducer_shorted,
+            self.transducer_corrupt,
+            self.sync_timeout,
+            self.dynamic_current_monitoring_min,
+            self.dynamic_current_monitoring_max,
+            self.angle_max_monitor,
+            self.yield_nut_off,
+            self.yield_too_few_samples
         ]);
 
-        var asciiLong = System.BitConverter.ToInt64(bytes, 0).ToString("D10");
-        return Encoding.ASCII.GetBytes(asciiLong);
+        let int_value = i64::from_le_bytes(bytes[0..8].try_into().unwrap());
+        let ascii_int = format!("{:010}", int_value);
+        ascii_int.into_bytes()
+
     }
 
     pub fn  parse_from_str(value:String)->TighteningErrorStatusT
     {
-        let longValue = OpenProtocolConvertT::string_to_int64(value);
-        let bytes = longValue.to_le_bytes().to_vec();
+        let long_value = OpenProtocolConvertT::string_to_int64(value);
+        let bytes = long_value.to_le_bytes().to_vec();
         
         Self::parse_from_bytes(bytes)
     }
@@ -146,106 +148,107 @@ impl TighteningErrorStatusT {
         TighteningErrorStatusT
         {
             //byte 0
-            RundownAngleMaxShutOff: OpenProtocolConvertT::get_bit(value[0], 1),
-            RundownAngleMinShutOff: OpenProtocolConvertT::get_bit(value[0], 2),
-            TorqueMaxShutOff: OpenProtocolConvertT::get_bit(value[0], 3),
-            AngleMaxShutOff: OpenProtocolConvertT::get_bit(value[0], 4),
-            SelftapTorqueMaxShutOff: OpenProtocolConvertT::get_bit(value[0], 5),
-            SelftapTorqueMinShutOff: OpenProtocolConvertT::get_bit(value[0], 6),
-            PrevailTorqueMaxShutOff: OpenProtocolConvertT::get_bit(value[0], 7),
-            PrevailTorqueMinShutOff: OpenProtocolConvertT::get_bit(value[0], 8),
+            rundown_angle_max_shut_off: OpenProtocolConvertT::get_bit(value[0], 1),
+            rundown_angle_min_shut_off: OpenProtocolConvertT::get_bit(value[0], 2),
+            torque_max_shut_off: OpenProtocolConvertT::get_bit(value[0], 3),
+            angle_max_shut_off: OpenProtocolConvertT::get_bit(value[0], 4),
+            selftap_torque_max_shut_off: OpenProtocolConvertT::get_bit(value[0], 5),
+            selftap_torque_min_shut_off: OpenProtocolConvertT::get_bit(value[0], 6),
+            prevail_torque_max_shut_off: OpenProtocolConvertT::get_bit(value[0], 7),
+            prevail_torque_min_shut_off: OpenProtocolConvertT::get_bit(value[0], 8),
 
             //byte 1
-            PrevailTorqueCompensateOverflow: OpenProtocolConvertT::get_bit(value[1], 1),
-            CurrentMonitoringMaxShutOff: OpenProtocolConvertT::get_bit(value[1], 2),
-            PostViewTorqueMinTorqueShutOff: OpenProtocolConvertT::get_bit(value[1], 3),
-            PostViewTorqueMaxTorqueShutOff: OpenProtocolConvertT::get_bit(value[1], 4),
-            PostViewTorqueAngleTooSmall: OpenProtocolConvertT::get_bit(value[1], 5),
-            TriggerLost: OpenProtocolConvertT::get_bit(value[1], 6),
-            TorqueLessThanTarget: OpenProtocolConvertT::get_bit(value[1], 7),
-            ToolHot: OpenProtocolConvertT::get_bit(value[1], 8),
+            prevail_torque_compensate_overflow: OpenProtocolConvertT::get_bit(value[1], 1),
+            current_monitoring_max_shut_off: OpenProtocolConvertT::get_bit(value[1], 2),
+            post_view_torque_min_torque_shut_off: OpenProtocolConvertT::get_bit(value[1], 3),
+            post_view_torque_max_torque_shut_off: OpenProtocolConvertT::get_bit(value[1], 4),
+            post_view_torque_angle_too_small: OpenProtocolConvertT::get_bit(value[1], 5),
+            trigger_lost: OpenProtocolConvertT::get_bit(value[1], 6),
+            torque_less_than_target: OpenProtocolConvertT::get_bit(value[1], 7),
+            tool_hot: OpenProtocolConvertT::get_bit(value[1], 8),
 
             //byte 2
-            MultistageAbort: OpenProtocolConvertT::get_bit(value[2], 1),
-            Rehit: OpenProtocolConvertT::get_bit(value[2], 2),
-            DsMeasureFailed: OpenProtocolConvertT::get_bit(value[2], 3),
-            CurrentLimitReached: OpenProtocolConvertT::get_bit(value[2], 4),
-            EndTimeOutShutOff: OpenProtocolConvertT::get_bit(value[2], 5),
-            RemoveFastenerLimitExceeded: OpenProtocolConvertT::get_bit(value[2], 6),
-            DisableDrive: OpenProtocolConvertT::get_bit(value[2], 7),
-            TransducerLost: OpenProtocolConvertT::get_bit(value[2], 8),
+            multistage_abort: OpenProtocolConvertT::get_bit(value[2], 1),
+            rehit: OpenProtocolConvertT::get_bit(value[2], 2),
+            ds_measure_failed: OpenProtocolConvertT::get_bit(value[2], 3),
+            current_limit_reached: OpenProtocolConvertT::get_bit(value[2], 4),
+            end_time_out_shut_off: OpenProtocolConvertT::get_bit(value[2], 5),
+            remove_fastener_limit_exceeded: OpenProtocolConvertT::get_bit(value[2], 6),
+            disable_drive: OpenProtocolConvertT::get_bit(value[2], 7),
+            transducer_lost: OpenProtocolConvertT::get_bit(value[2], 8),
 
             //byte 3
-            TransducerShorted: OpenProtocolConvertT::get_bit(value[3], 1),
-            TransducerCorrupt: OpenProtocolConvertT::get_bit(value[3], 2),
-            SyncTimeout: OpenProtocolConvertT::get_bit(value[3], 3),
-            DynamicCurrentMonitoringMin: OpenProtocolConvertT::get_bit(value[3], 4),
-            DynamicCurrentMonitoringMax: OpenProtocolConvertT::get_bit(value[3], 5),
-            AngleMaxMonitor: OpenProtocolConvertT::get_bit(value[3], 6),
-            YieldNutOff: OpenProtocolConvertT::get_bit(value[3], 7),
-            YieldTooFewSamples: OpenProtocolConvertT::get_bit(value[3], 8)
+            transducer_shorted: OpenProtocolConvertT::get_bit(value[3], 1),
+            transducer_corrupt: OpenProtocolConvertT::get_bit(value[3], 2),
+            sync_timeout: OpenProtocolConvertT::get_bit(value[3], 3),
+            dynamic_current_monitoring_min: OpenProtocolConvertT::get_bit(value[3], 4),
+            dynamic_current_monitoring_max: OpenProtocolConvertT::get_bit(value[3], 5),
+            angle_max_monitor: OpenProtocolConvertT::get_bit(value[3], 6),
+            yield_nut_off: OpenProtocolConvertT::get_bit(value[3], 7),
+            yield_too_few_samples: OpenProtocolConvertT::get_bit(value[3], 8)
         }
     }
 }
 
 impl TighteningErrorStatus2T {
-    public TighteningErrorStatus2()
+    pub fn new()->TighteningErrorStatus2T
     {
-        Reserved = new byte[10];
+        TighteningErrorStatus2T{..Default::default()}
     }
 
-    pub fn Pack()->String {
-        byte[] bytes = PackBytes();
-        return Encoding.ASCII.GetString(bytes);
+    pub fn pack(&mut self)->String {
+        let bytes = self.pack_bytes();
+        std::str::from_utf8(&bytes).expect("Invalid ASCII").to_string()
     }
 
-    pub fn PackBytes()->Vec<u8> {
-        byte[] bytes =
-        [
-            OpenProtocolConvert.ToByte(
-            [
-                DriveDeactivated,
-                ToolStall,
-                DriveHot,
-                GradientMonitoringHigh,
-                GradientMonitoringLow,
-                ReactionBarFailed,
-                SnugMax,
-                CycleAbort,
+    pub fn pack_bytes(&mut self)->Vec<u8> {
+        let bytes:Vec<u8> =
+        vec![
+            OpenProtocolConvertT::bool_to_byte(
+            vec![
+                self.drive_deactivated,
+                self.tool_stall,
+                self.drive_hot,
+                self.gradient_monitoring_high,
+                self.gradient_monitoring_low,
+                self.reaction_bar_failed,
+                self.snug_max,
+                self.cycle_abort,
             ]),
-            OpenProtocolConvert.ToByte(
-            [
-                NeckingFailure,
-                EffectiveLoosening,
-                OverSpeed,
-                NoResidualTorque,
-                PositioningFail,
-                SnugMonLow,
-                SnugMonHigh,
-                DynamicMinCurrent,
+            OpenProtocolConvertT::bool_to_byte(
+            vec![
+                self.necking_failure,
+                self.effective_loosening,
+                self.over_speed,
+                self.no_residual_torque,
+                self.positioning_fail,
+                self.snug_mon_low,
+                self.snug_mon_high,
+                self.dynamic_min_current,
             ]),
-            OpenProtocolConvert.ToByte(
-            [
-                DynamicMaxCurrent,
-                LatentResult,
-                OpenProtocolConvertT::get_bit(Reserved[2], 3),
-                OpenProtocolConvertT::get_bit(Reserved[2], 4),
-                OpenProtocolConvertT::get_bit(Reserved[2], 5),
-                OpenProtocolConvertT::get_bit(Reserved[2], 6),
-                OpenProtocolConvertT::get_bit(Reserved[2], 7),
-                OpenProtocolConvertT::get_bit(Reserved[2], 8)
+            OpenProtocolConvertT::bool_to_byte(
+            vec![
+                self.dynamic_max_current,
+                self.latent_result,
+                OpenProtocolConvertT::get_bit(self.reserved[2], 3),
+                OpenProtocolConvertT::get_bit(self.reserved[2], 4),
+                OpenProtocolConvertT::get_bit(self.reserved[2], 5),
+                OpenProtocolConvertT::get_bit(self.reserved[2], 6),
+                OpenProtocolConvertT::get_bit(self.reserved[2], 7),
+                OpenProtocolConvertT::get_bit(self.reserved[2], 8)
             ]),
-            Reserved[3],
-            Reserved[4],
-            Reserved[5],
-            Reserved[6],
-            Reserved[7],
-            Reserved[8],
-            Reserved[9]
+            self.reserved[3],
+            self.reserved[4],
+            self.reserved[5],
+            self.reserved[6],
+            self.reserved[7],
+            self.reserved[8],
+            self.reserved[9]
         ];
 
-        var asciiLong = System.BitConverter.ToInt64(bytes, 0).ToString().PadLeft(10, '0');
-        return Encoding.ASCII.GetBytes(asciiLong);
+        let int_value = i64::from_le_bytes(bytes[0..8].try_into().unwrap());
+        let ascii_int = format!("{:010}", int_value);
+        ascii_int.into_bytes()
     }
 
     pub fn parse_from_str(value:String)->TighteningErrorStatus2T
@@ -257,36 +260,36 @@ impl TighteningErrorStatus2T {
 
     pub fn parse_from_bytes(value:Vec<u8>)->TighteningErrorStatus2T
     {
-        let obj = TighteningErrorStatus2T
+        let mut obj = TighteningErrorStatus2T
         {
             //byte 0
-            DriveDeactivated: OpenProtocolConvertT::get_bit(value[0], 1),
-            ToolStall: OpenProtocolConvertT::get_bit(value[0], 2),
-            DriveHot: OpenProtocolConvertT::get_bit(value[0], 3),
-            GradientMonitoringHigh: OpenProtocolConvertT::get_bit(value[0], 4),
-            GradientMonitoringLow: OpenProtocolConvertT::get_bit(value[0], 5),
-            ReactionBarFailed: OpenProtocolConvertT::get_bit(value[0], 6),
-            SnugMax: OpenProtocolConvertT::get_bit(value[0], 7),
-            CycleAbort: OpenProtocolConvertT::get_bit(value[0], 8),
+            drive_deactivated: OpenProtocolConvertT::get_bit(value[0], 1),
+            tool_stall: OpenProtocolConvertT::get_bit(value[0], 2),
+            drive_hot: OpenProtocolConvertT::get_bit(value[0], 3),
+            gradient_monitoring_high: OpenProtocolConvertT::get_bit(value[0], 4),
+            gradient_monitoring_low: OpenProtocolConvertT::get_bit(value[0], 5),
+            reaction_bar_failed: OpenProtocolConvertT::get_bit(value[0], 6),
+            snug_max: OpenProtocolConvertT::get_bit(value[0], 7),
+            cycle_abort: OpenProtocolConvertT::get_bit(value[0], 8),
 
             //byte 1
-            NeckingFailure: OpenProtocolConvertT::get_bit(value[1], 1),
-            EffectiveLoosening: OpenProtocolConvertT::get_bit(value[1], 2),
-            OverSpeed: OpenProtocolConvertT::get_bit(value[1], 3),
-            NoResidualTorque: OpenProtocolConvertT::get_bit(value[1], 4),
-            PositioningFail: OpenProtocolConvertT::get_bit(value[1], 5),
-            SnugMonLow: OpenProtocolConvertT::get_bit(value[1], 6),
-            SnugMonHigh: OpenProtocolConvertT::get_bit(value[1], 7),
-            DynamicMinCurrent: OpenProtocolConvertT::get_bit(value[1], 8),
+            necking_failure: OpenProtocolConvertT::get_bit(value[1], 1),
+            effective_loosening: OpenProtocolConvertT::get_bit(value[1], 2),
+            over_speed: OpenProtocolConvertT::get_bit(value[1], 3),
+            no_residual_torque: OpenProtocolConvertT::get_bit(value[1], 4),
+            positioning_fail: OpenProtocolConvertT::get_bit(value[1], 5),
+            snug_mon_low: OpenProtocolConvertT::get_bit(value[1], 6),
+            snug_mon_high: OpenProtocolConvertT::get_bit(value[1], 7),
+            dynamic_min_current: OpenProtocolConvertT::get_bit(value[1], 8),
 
             //byte 2
-            DynamicMaxCurrent: OpenProtocolConvertT::get_bit(value[2], 1),
-            LatentResult: OpenProtocolConvertT::get_bit(value[2], 2),
-            Reserved:[u8; 10]
+            dynamic_max_current: OpenProtocolConvertT::get_bit(value[2], 1),
+            latent_result: OpenProtocolConvertT::get_bit(value[2], 2),
+            reserved:Default::default()
         };
 
         //set only 19 and 20 bytes to reserved
-        obj.Reserved[0] = OpenProtocolConvertT::bool_to_byte([OpenProtocolConvertT::get_bit(value[2], 3), OpenProtocolConvertT::get_bit(value[2], 4), false, false, false, false, false, false]);
+        obj.reserved[0] = OpenProtocolConvertT::bool_to_byte(vec![OpenProtocolConvertT::get_bit(value[2], 3), OpenProtocolConvertT::get_bit(value[2], 4), false, false, false, false, false, false]);
 
         return obj;
     }
