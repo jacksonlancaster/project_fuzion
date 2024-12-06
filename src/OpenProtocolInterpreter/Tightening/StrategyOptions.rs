@@ -4,7 +4,7 @@
     /// Represents a Strategy Options entity
     /// </summary>
     
-    #[derive(Clone)]
+    #[derive(Clone, Default)]
     pub struct StrategyOptionsT {
         //Byte 0
         pub torque:bool,

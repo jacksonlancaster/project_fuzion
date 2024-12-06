@@ -110,7 +110,7 @@ pub(crate)  enum DataFields
     //Rev 999 => all registered
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Mid0061T { //:Mid, ITightening, IController, IAcknowledgeable<Mid0062>
     pub mid:MidT,
     pub strategy_options:StrategyOptionsT,
@@ -788,7 +788,7 @@ impl Mid0061T {
 
     pub fn new_header(header:HeaderT)->Self
     {
-        Mid0061T { mid: MidT::new(header), stage_results:Vec::new() }
+        Mid0061T { mid: MidT::new(header), stage_results:Vec::new(), ..Default::default()}
     }
 
     pub fn new_rev(revision:i32) ->Self {
@@ -797,6 +797,123 @@ impl Mid0061T {
         h.revision = revision;
         Self::new_header(h)
     }
+
+    pub(crate) fn build_header(&mut self)->String
+        {
+            if !self.mid.revisions_by_fields.is_empty() {
+                self.mid.header.length = 20;
+                self.mid.header.revision = if self.mid.header.revision > 0  {self.mid.header.revision} else {1};
+                if self.mid.header.revision == 1 || self.mid.header.revision == 999 {
+                    let data_fields = self.mid.revisions_by_fields.get(&self.mid.header.revision);
+                    for data_field in data_fields.unwrap()  {
+                        self.mid.header.length += (if data_field.has_prefix  {2} else {0}) + data_field.size;
+                    }
+                } else {
+                    let process_until:i32 = if self.mid.header.revision != 998  {self.mid.header.revision} else {6};
+                    let mut i = 2;
+                    while i <= process_until {
+                        let data_fields = self.mid.revisions_by_fields.get(&i);
+                        for data_field in data_fields.unwrap() {
+                            self.mid.header.length += (if data_field.has_prefix  {2} else {0}) + data_field.size;
+                        }
+                        i +=1;
+                    }
+
+                    if self.mid.header.revision == 998 {
+                       self.mid.get_field(998, DataFields::StageResult as i32).size = self.stage_results.len() as i32 * 11;
+                       let k = 998;
+                       let data_fields = self.mid.revisions_by_fields.get(&k);
+                        for data_field in data_fields.unwrap() {
+                            self.mid.header.length += (if data_field.has_prefix  {2} else {0}) + data_field.size;
+                        }
+                    }
+                }
+            }
+            self.mid.header.to_string()
+        }
+
+        pub fn pack(&mut self)->String {
+            let mut builder = String::new();
+            let mut prefix_index = 1;
+            if self.mid.header.revision > 1 && self.mid.header.revision != 999 {
+                self.mid.get_field(2, DataFields::StrategyOptions as i32).set_value(self.strategy_options.pack());
+                self.mid.get_field(2, DataFields::TighteningErrorStatus as i32).set_value(self.tightening_error_status.pack());
+
+                if self.mid.header.revision > 5 {
+                    self.mid.get_field(6, DataFields::TighteningErrorStatus2 as i32).set_value(self.tightening_error_status2.pack());
+                }
+
+                if self.mid.header.revision == 998 {
+                    self.set_number_of_stage_results(self.stage_results.len() as i32);
+                    let mut stage_result_field = self.mid.get_field(998, DataFields::StageResult as i32);
+                    stage_result_field.size = self.stage_results.len() as i32 * 11;
+                    stage_result_field.set_value(self.pack_stage_results());
+                }
+
+                builder.push_str(self.build_header().as_str());
+                let process_until_revision:i32 = if self.mid.header.revision != 998 {self.mid.header.revision} else {6};
+                let mut revision = 2;
+                while revision <= process_until_revision {
+                    builder.push_str(self.mid.pack2(revision, &mut prefix_index).as_str());
+                    revision +=1;
+                }
+
+                if self.mid.header.revision == 998 {
+                    builder.push_str(self.mid.pack2(998, &mut prefix_index).as_str());
+                }
+            }
+            else
+            {
+                builder.push_str(self.build_header().as_str());
+                builder.push_str(self.mid.pack2(self.mid.header.revision, &mut prefix_index).as_str());
+            }
+
+            builder
+        }
+
+    
+        pub(crate) fn  process_data_fields(&mut self, package:String) {
+            if self.mid.header.revision == 1 || self.mid.header.revision == 999 {
+                self.mid.process_data_fields2(self.mid.header.revision, package.clone());
+            }
+            else
+            {
+                let mut process_until_revision = self.mid.header.revision;
+                if self.mid.header.revision == 998 {
+                    process_until_revision = 6;
+                    let mut stage_result_field = self.mid.get_field(998, DataFields::StageResult as i32);
+                    stage_result_field.size = self.mid.header.length - stage_result_field.index - 2;
+                    self.mid.process_data_fields2(998, package.clone());
+                    self.stage_results = StageResultT::parse_all(stage_result_field.value).to_vec();
+                }
+
+                let mut revision = 2;
+                while revision <= process_until_revision {
+                    self.mid.process_data_fields2(revision, package.clone());
+                    revision +=1;
+                }
+
+                let strategy_options_field = self.mid.get_field(2, DataFields::StrategyOptions as i32);
+                self.strategy_options = StrategyOptionsT::parse_from_str(strategy_options_field.value);
+
+                let tightening_error_status_field = self.mid.get_field(2, DataFields::TighteningErrorStatus as i32);
+                self.tightening_error_status = TighteningErrorStatusT::parse_from_str(tightening_error_status_field.value);
+
+                if self.mid.header.revision > 5 {
+                    let tightening_error_status2_field = self.mid.get_field(6, DataFields::TighteningErrorStatus2 as i32);
+                    self.tightening_error_status2 = TighteningErrorStatus2T::parse_from_str(tightening_error_status2_field.value);
+                }
+            }
+        }
+
+        pub(crate) fn pack_stage_results(&mut self)->String {
+            let mut builder = String::new();
+            for mut v in self.stage_results.clone() {
+                builder.push_str(v.pack().as_str());
+            }
+
+            builder
+        }
 
     /// <summary>
     /// Obtain which revision we will work with for shared properties

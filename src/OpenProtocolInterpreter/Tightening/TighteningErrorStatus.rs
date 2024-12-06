@@ -4,7 +4,7 @@ use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 /// Represents a Tightening Error Status entity
 /// </summary>
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct TighteningErrorStatusT
 {
     //Byte 0
