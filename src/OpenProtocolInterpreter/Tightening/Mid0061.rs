@@ -1,6 +1,9 @@
+use std::collections::HashMap;
+
 use chrono::{DateTime, Local};
 
-use crate::OpenProtocolInterpreter::Enums;
+use crate::OpenProtocolInterpreter::DataField::DataFieldT;
+use crate::OpenProtocolInterpreter::Enums::{self, PaddingOrientation};
 use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 /// <summary>
 /// Last tightening result data
@@ -832,88 +835,250 @@ impl Mid0061T {
             self.mid.header.to_string()
         }
 
-        pub fn pack(&mut self)->String {
-            let mut builder = String::new();
-            let mut prefix_index = 1;
-            if self.mid.header.revision > 1 && self.mid.header.revision != 999 {
-                self.mid.get_field(2, DataFields::StrategyOptions as i32).set_value(self.strategy_options.pack());
-                self.mid.get_field(2, DataFields::TighteningErrorStatus as i32).set_value(self.tightening_error_status.pack());
+    pub fn pack(&mut self)->String {
+        let mut builder = String::new();
+        let mut prefix_index = 1;
+        if self.mid.header.revision > 1 && self.mid.header.revision != 999 {
+            self.mid.get_field(2, DataFields::StrategyOptions as i32).set_value(self.strategy_options.pack());
+            self.mid.get_field(2, DataFields::TighteningErrorStatus as i32).set_value(self.tightening_error_status.pack());
 
-                if self.mid.header.revision > 5 {
-                    self.mid.get_field(6, DataFields::TighteningErrorStatus2 as i32).set_value(self.tightening_error_status2.pack());
-                }
-
-                if self.mid.header.revision == 998 {
-                    self.set_number_of_stage_results(self.stage_results.len() as i32);
-                    let mut stage_result_field = self.mid.get_field(998, DataFields::StageResult as i32);
-                    stage_result_field.size = self.stage_results.len() as i32 * 11;
-                    stage_result_field.set_value(self.pack_stage_results());
-                }
-
-                builder.push_str(self.build_header().as_str());
-                let process_until_revision:i32 = if self.mid.header.revision != 998 {self.mid.header.revision} else {6};
-                let mut revision = 2;
-                while revision <= process_until_revision {
-                    builder.push_str(self.mid.pack2(revision, &mut prefix_index).as_str());
-                    revision +=1;
-                }
-
-                if self.mid.header.revision == 998 {
-                    builder.push_str(self.mid.pack2(998, &mut prefix_index).as_str());
-                }
-            }
-            else
-            {
-                builder.push_str(self.build_header().as_str());
-                builder.push_str(self.mid.pack2(self.mid.header.revision, &mut prefix_index).as_str());
+            if self.mid.header.revision > 5 {
+                self.mid.get_field(6, DataFields::TighteningErrorStatus2 as i32).set_value(self.tightening_error_status2.pack());
             }
 
-            builder
+            if self.mid.header.revision == 998 {
+                self.set_number_of_stage_results(self.stage_results.len() as i32);
+                let mut stage_result_field = self.mid.get_field(998, DataFields::StageResult as i32);
+                stage_result_field.size = self.stage_results.len() as i32 * 11;
+                stage_result_field.set_value(self.pack_stage_results());
+            }
+
+            builder.push_str(self.build_header().as_str());
+            let process_until_revision:i32 = if self.mid.header.revision != 998 {self.mid.header.revision} else {6};
+            let mut revision = 2;
+            while revision <= process_until_revision {
+                builder.push_str(self.mid.pack2(revision, &mut prefix_index).as_str());
+                revision +=1;
+            }
+
+            if self.mid.header.revision == 998 {
+                builder.push_str(self.mid.pack2(998, &mut prefix_index).as_str());
+            }
+        }
+        else
+        {
+            builder.push_str(self.build_header().as_str());
+            builder.push_str(self.mid.pack2(self.mid.header.revision, &mut prefix_index).as_str());
         }
 
+        builder
+    }
+
+
+    pub(crate) fn  process_data_fields(&mut self, package:String) {
+        if self.mid.header.revision == 1 || self.mid.header.revision == 999 {
+            self.mid.process_data_fields2(self.mid.header.revision, package.clone());
+        }
+        else
+        {
+            let mut process_until_revision = self.mid.header.revision;
+            if self.mid.header.revision == 998 {
+                process_until_revision = 6;
+                let mut stage_result_field = self.mid.get_field(998, DataFields::StageResult as i32);
+                stage_result_field.size = self.mid.header.length - stage_result_field.index - 2;
+                self.mid.process_data_fields2(998, package.clone());
+                self.stage_results = StageResultT::parse_all(stage_result_field.value).to_vec();
+            }
+
+            let mut revision = 2;
+            while revision <= process_until_revision {
+                self.mid.process_data_fields2(revision, package.clone());
+                revision +=1;
+            }
+
+            let strategy_options_field = self.mid.get_field(2, DataFields::StrategyOptions as i32);
+            self.strategy_options = StrategyOptionsT::parse_from_str(strategy_options_field.value);
+
+            let tightening_error_status_field = self.mid.get_field(2, DataFields::TighteningErrorStatus as i32);
+            self.tightening_error_status = TighteningErrorStatusT::parse_from_str(tightening_error_status_field.value);
+
+            if self.mid.header.revision > 5 {
+                let tightening_error_status2_field = self.mid.get_field(6, DataFields::TighteningErrorStatus2 as i32);
+                self.tightening_error_status2 = TighteningErrorStatus2T::parse_from_str(tightening_error_status2_field.value);
+            }
+        }
+    }
+
+    pub(crate) fn pack_stage_results(&mut self)->String {
+        let mut builder = String::new();
+        for mut v in self.stage_results.clone() {
+            builder.push_str(v.pack().as_str());
+        }
+
+        builder
+    }
     
-        pub(crate) fn  process_data_fields(&mut self, package:String) {
-            if self.mid.header.revision == 1 || self.mid.header.revision == 999 {
-                self.mid.process_data_fields2(self.mid.header.revision, package.clone());
-            }
-            else
-            {
-                let mut process_until_revision = self.mid.header.revision;
-                if self.mid.header.revision == 998 {
-                    process_until_revision = 6;
-                    let mut stage_result_field = self.mid.get_field(998, DataFields::StageResult as i32);
-                    stage_result_field.size = self.mid.header.length - stage_result_field.index - 2;
-                    self.mid.process_data_fields2(998, package.clone());
-                    self.stage_results = StageResultT::parse_all(stage_result_field.value).to_vec();
-                }
+    pub(crate) fn register_datafields()->HashMap<i32, Vec<DataFieldT>> {
+        let mut hm:HashMap<i32, Vec<DataFieldT>>  = HashMap::new();
+        
+        let mut v1:Vec<DataFieldT>= Vec::new();
+        v1.push(DataFieldT::number(DataFields::CellId as i32, 20, 4, None));
+        v1.push(DataFieldT::number(DataFields::ChannelId as i32, 26, 2, None));
+        v1.push(DataFieldT::string2(DataFields::TorqueControllerName as i32, 30, 25, None));
+        v1.push(DataFieldT::string2(DataFields::VinNumber as i32, 57, 25, None));
+        v1.push(DataFieldT::number(DataFields::JobId as i32, 84, 2, None));
+        v1.push(DataFieldT::number(DataFields::ParameterSetId as i32, 88, 3, None));
+        v1.push(DataFieldT::number(DataFields::BatchSize as i32, 93, 4, None));
+        v1.push(DataFieldT::number(DataFields::BatchCounter as i32, 99, 4, None));
+        v1.push(DataFieldT::number(DataFields::TighteningStatus as i32, 105, 1, None));
+        v1.push(DataFieldT::number(DataFields::TorqueStatus as i32, 108, 1, None));
+        v1.push(DataFieldT::number(DataFields::AngleStatus as i32, 111, 1, None));
+        v1.push(DataFieldT::number(DataFields::TorqueMinLimit as i32, 114, 6, None));
+        v1.push(DataFieldT::number(DataFields::TorqueMaxLimit as i32, 122, 6, None));
+        v1.push(DataFieldT::number(DataFields::TorqueFinalTarget as i32, 130, 6, None));
+        v1.push(DataFieldT::number(DataFields::Torque as i32, 138, 6, None));
+        v1.push(DataFieldT::number(DataFields::AngleMinLimit as i32, 146, 5, None));
+        v1.push(DataFieldT::number(DataFields::AngleMaxLimit as i32, 153, 5, None));
+        v1.push(DataFieldT::number(DataFields::AngleFinalTarget as i32, 160, 5, None));
+        v1.push(DataFieldT::number(DataFields::Angle as i32, 167, 5, None));
+        v1.push(DataFieldT::timestamp(DataFields::Timestamp as i32, 174, None));
+        v1.push(DataFieldT::timestamp(DataFields::LastChangeInParameterSet as i32, 195, None));
+        v1.push(DataFieldT::number(DataFields::BatchStatus as i32, 216, 1, None));
+        v1.push(DataFieldT::number(DataFields::TighteningId as i32, 219, 10, None));
+        hm.insert(1, v1);
 
-                let mut revision = 2;
-                while revision <= process_until_revision {
-                    self.mid.process_data_fields2(revision, package.clone());
-                    revision +=1;
-                }
+        let mut v2:Vec<DataFieldT>= Vec::new();
+        v2.push(DataFieldT::number(DataFields::CellId as i32, 20, 4, None));
+        v2.push(DataFieldT::number(DataFields::ChannelId as i32, 26, 2, None));
+        v2.push(DataFieldT::string2(DataFields::TorqueControllerName as i32, 30, 25, None));
+        v2.push(DataFieldT::string2(DataFields::VinNumber as i32, 57, 25, None));
+        v2.push(DataFieldT::number(DataFields::JobId as i32, 84, 4, None));
+        v2.push(DataFieldT::number(DataFields::ParameterSetId as i32, 90, 3, None));
+        v2.push(DataFieldT::number(DataFields::Strategy as i32, 95, 2, None));
+        v2.push(DataFieldT::new3(DataFields::StrategyOptions as i32, 99, 5, '0', Some(PaddingOrientation::LeftPadded), None));
+        v2.push(DataFieldT::number(DataFields::BatchSize as i32, 106, 4, None));
+        v2.push(DataFieldT::number(DataFields::BatchCounter as i32, 112, 4, None));
+        v2.push(DataFieldT::number(DataFields::TighteningStatus as i32, 118, 1, None));
+        v2.push(DataFieldT::number(DataFields::BatchStatus as i32, 121, 1, None));
+        v2.push(DataFieldT::number(DataFields::TorqueStatus as i32, 124, 1, None));
+        v2.push(DataFieldT::number(DataFields::AngleStatus as i32, 127, 1, None));
+        v2.push(DataFieldT::number(DataFields::RundownAngleStatus as i32, 130, 1, None));
+        v2.push(DataFieldT::number(DataFields::CurrentMonitoringStatus as i32, 133, 1, None));
+        v2.push(DataFieldT::number(DataFields::SelftapStatus as i32, 136, 1, None));
+        v2.push(DataFieldT::number(DataFields::PrevailTorqueMonitoringStatus as i32, 139, 1, None));
+        v2.push(DataFieldT::number(DataFields::PrevailTorqueCompensateStatus as i32, 142, 1, None));
+        v2.push(DataFieldT::new3(DataFields::TighteningErrorStatus as i32, 145, 10, '0', Some(PaddingOrientation::LeftPadded), None));
+        v2.push(DataFieldT::number(DataFields::TorqueMinLimit as i32, 157, 6, None));
+        v2.push(DataFieldT::number(DataFields::TorqueMaxLimit as i32, 165, 6, None));
+        v2.push(DataFieldT::number(DataFields::TorqueFinalTarget as i32, 173, 6, None));
+        v2.push(DataFieldT::number(DataFields::Torque as i32, 181, 6, None));
+        v2.push(DataFieldT::number(DataFields::AngleMinLimit as i32, 189, 5, None));
+        v2.push(DataFieldT::number(DataFields::AngleMaxLimit as i32, 196, 5, None));
+        v2.push(DataFieldT::number(DataFields::AngleFinalTarget as i32, 203, 5, None));
+        v2.push(DataFieldT::number(DataFields::Angle as i32, 210, 5, None));
+        v2.push(DataFieldT::number(DataFields::RundownAngleMin as i32, 217, 5, None));
+        v2.push(DataFieldT::number(DataFields::RundownAngleMax as i32, 224, 5, None));
+        v2.push(DataFieldT::number(DataFields::RundownAngle as i32, 231, 5, None));
+        v2.push(DataFieldT::number(DataFields::CurrentMonitoringMin as i32, 238, 3, None));
+        v2.push(DataFieldT::number(DataFields::CurrentMonitoringMax as i32, 243, 3, None));
+        v2.push(DataFieldT::number(DataFields::CurrentMonitoringValue as i32, 248, 3, None));
+        v2.push(DataFieldT::number(DataFields::SelftapMin as i32, 253, 6, None));
+        v2.push(DataFieldT::number(DataFields::SelftapMax as i32, 261, 6  , None));
+        v2.push(DataFieldT::number(DataFields::SelftapTorque as i32, 269, 6, None));
+        v2.push(DataFieldT::number(DataFields::PrevailTorqueMonitoringMin as i32, 277, 6, None));
+        v2.push(DataFieldT::number(DataFields::PrevailTorqueMonitoringMax as i32, 285, 6, None));
+        v2.push(DataFieldT::number(DataFields::PrevailTorque as i32, 293, 6, None));
+        v2.push(DataFieldT::number(DataFields::TighteningId as i32, 301, 10, None));
+        v2.push(DataFieldT::number(DataFields::JobSequenceNumber as i32, 313, 5, None));
+        v2.push(DataFieldT::number(DataFields::SyncTighteningId as i32, 320, 5, None));
+        v2.push(DataFieldT::string2(DataFields::ToolSerialNumber as i32, 327, 14, None));
+        v2.push(DataFieldT::timestamp(DataFields::Timestamp as i32, 343, None));
+        v2.push(DataFieldT::timestamp(DataFields::LastChangeInParameterSet as i32, 364, None));
+        hm.insert(2, v2);
 
-                let strategy_options_field = self.mid.get_field(2, DataFields::StrategyOptions as i32);
-                self.strategy_options = StrategyOptionsT::parse_from_str(strategy_options_field.value);
+        let mut v3:Vec<DataFieldT>= Vec::new();
+        v3.push(DataFieldT::string2(DataFields::ParameterSetName as i32, 385, 25, None));
+        v3.push(DataFieldT::number(DataFields::TorqueValuesUnit as i32, 412, 1, None));
+        v3.push(DataFieldT::number(DataFields::ResultType as i32, 415, 2, None));
+        hm.insert(3, v3);
 
-                let tightening_error_status_field = self.mid.get_field(2, DataFields::TighteningErrorStatus as i32);
-                self.tightening_error_status = TighteningErrorStatusT::parse_from_str(tightening_error_status_field.value);
+        let mut v4:Vec<DataFieldT>= Vec::new();
+        v4.push(DataFieldT::string2(DataFields::IdentifierResultPart2 as i32, 419, 25, None));
+        v4.push(DataFieldT::string2(DataFields::IdentifierResultPart3 as i32, 446, 25, None));
+        v4.push(DataFieldT::string2(DataFields::IdentifierResultPart4 as i32, 473, 25, None));
+        hm.insert(4, v4);
 
-                if self.mid.header.revision > 5 {
-                    let tightening_error_status2_field = self.mid.get_field(6, DataFields::TighteningErrorStatus2 as i32);
-                    self.tightening_error_status2 = TighteningErrorStatus2T::parse_from_str(tightening_error_status2_field.value);
-                }
-            }
-        }
+        
+        let mut v5:Vec<DataFieldT>= Vec::new();
+        v5.push(DataFieldT::string2(DataFields::CustomerTighteningErrorCode as i32, 500, 4, None));
+        hm.insert(5, v5);
 
-        pub(crate) fn pack_stage_results(&mut self)->String {
-            let mut builder = String::new();
-            for mut v in self.stage_results.clone() {
-                builder.push_str(v.pack().as_str());
-            }
+        let mut v6:Vec<DataFieldT>= Vec::new();
+        v6.push(DataFieldT::number(DataFields::PrevailTorqueCompensateValue as i32, 506, 6, None));
+        v6.push(DataFieldT::new3(DataFields::TighteningErrorStatus2 as i32, 514, 10, '0', Some(PaddingOrientation::LeftPadded), None));
+        hm.insert(6, v6);
+        
+        let mut v7:Vec<DataFieldT>= Vec::new();
+        v7.push(DataFieldT::number(DataFields::CompensatedAngle as i32, 526, 7, None));
+        v7.push(DataFieldT::number(DataFields::FinalAngleDecimal as i32, 535, 7, None));
+        hm.insert(7, v7);
 
-            builder
-        }
+        let mut v8:Vec<DataFieldT>= Vec::new();
+        v8.push(DataFieldT::number(DataFields::StartFinalAngle as i32, 544, 6, None));
+        v8.push(DataFieldT::number(DataFields::PostViewTorqueActivated as i32, 552, 1, None));
+        v8.push(DataFieldT::number(DataFields::PostViewTorqueHigh as i32, 555, 6, None));
+        v8.push(DataFieldT::number(DataFields::PostViewTorqueLow as i32, 563, 6, None));
+        hm.insert(8, v8);
+
+        let mut v9:Vec<DataFieldT>= Vec::new();
+        v9.push(DataFieldT::number(DataFields::CurrentMonitoringAmp as i32, 571, 5, None));
+        v9.push(DataFieldT::number(DataFields::CurrentMonitoringAmpMin as i32, 578, 5, None));
+        v9.push(DataFieldT::number(DataFields::CurrentMonitoringAmpMax as i32, 585, 5, None));
+        hm.insert(9, v9);
+
+        let mut v10:Vec<DataFieldT>= Vec::new();
+        v10.push(DataFieldT::number(DataFields::AngleNumeratorScaleFactor as i32, 592, 5, None));
+        v10.push(DataFieldT::number(DataFields::AngleDenominatorScaleFactor as i32, 599, 5, None));
+        v10.push(DataFieldT::number(DataFields::OverallAngleStatus as i32, 606, 1, None));
+        v10.push(DataFieldT::number(DataFields::OverallAngleMin as i32, 609, 5, None));
+        v10.push(DataFieldT::number(DataFields::OverallAngleMax as i32, 616, 5, None));
+        v10.push(DataFieldT::number(DataFields::OverallAngle as i32, 623, 5, None));
+        v10.push(DataFieldT::number(DataFields::PeakTorque as i32, 630, 6, None));
+        v10.push(DataFieldT::number(DataFields::ResidualBreakawayTorque as i32, 638, 6, None));
+        v10.push(DataFieldT::number(DataFields::StartRundownAngle as i32, 646, 6, None));
+        v10.push(DataFieldT::number(DataFields::RundownAngleComplete as i32, 654, 6, None));
+        hm.insert(10, v10);
+
+        let mut v11:Vec<DataFieldT>= Vec::new();
+        v11.push(DataFieldT::number(DataFields::ClickTorque as i32, 662, 6, None));
+        v11.push(DataFieldT::number(DataFields::ClickAngle as i32, 670, 5, None));
+        hm.insert(11, v11);
+
+        let mut v12:Vec<DataFieldT>= Vec::new();
+        v12.push(DataFieldT::number(DataFields::NumberOfStagesInMultistage as i32, 526, 2, None));
+        v12.push(DataFieldT::number(DataFields::NumberOfStageResults as i32, 530, 2, None));
+        v12.push(DataFieldT::new(DataFields::StageResult as i32, 534, 11, None));
+        hm.insert(998, v12);
+
+        let mut v13:Vec<DataFieldT>= Vec::new();
+        v13.push(DataFieldT::string2(DataFields::VinNumber as i32, 20, 25, Some(false)));
+        v13.push(DataFieldT::number(DataFields::JobId as i32, 45, 2, Some(false)));
+        v13.push(DataFieldT::number(DataFields::ParameterSetId as i32, 47, 3, Some(false)));
+        v13.push(DataFieldT::number(DataFields::BatchSize as i32, 50, 4, Some(false)));
+        v13.push(DataFieldT::number(DataFields::BatchCounter as i32, 54, 4, Some(false)));
+        v13.push(DataFieldT::number(DataFields::BatchStatus as i32, 58, 1, Some(false)));
+        v13.push(DataFieldT::number(DataFields::TighteningStatus as i32, 59, 1, Some(false)));
+        v13.push(DataFieldT::number(DataFields::TorqueStatus as i32, 60, 1, Some(false)));
+        v13.push(DataFieldT::number(DataFields::AngleStatus as i32, 61, 1, Some(false)));
+        v13.push(DataFieldT::number(DataFields::Torque as i32, 62, 6, Some(false)));
+        v13.push(DataFieldT::number(DataFields::Angle as i32, 68, 5, Some(false)));
+        v13.push(DataFieldT::timestamp(DataFields::Timestamp as i32, 73, Some(false)));
+        v13.push(DataFieldT::timestamp(DataFields::LastChangeInParameterSet as i32, 92, Some(false)));
+        v13.push(DataFieldT::number(DataFields::TighteningId as i32, 111, 10, Some(false)));
+        hm.insert(999, v13);
+
+        hm
+    }
 
     /// <summary>
     /// Obtain which revision we will work with for shared properties

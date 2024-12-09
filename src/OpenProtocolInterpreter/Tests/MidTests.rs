@@ -1,3 +1,5 @@
+use chrono::{Date, DateTime, Local};
+
 use crate::OpenProtocolInterpreter::Communication::Mid0001::Mid0001T;
 use crate::OpenProtocolInterpreter::Communication::Mid0002::Mid0002T;
 use crate::OpenProtocolInterpreter::Communication::Mid0004::Mid0004T;
@@ -16,6 +18,7 @@ use crate::OpenProtocolInterpreter::Vin::Mid0051::Mid0051T;
 use crate::OpenProtocolInterpreter::Vin::Mid0052::Mid0052T;
 use crate::OpenProtocolInterpreter::Vin::Mid0053::Mid0053T;
 use crate::OpenProtocolInterpreter::Tightening::Mid0060::Mid0060T;
+use crate::OpenProtocolInterpreter::Tightening::Mid0061::Mid0061T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -374,13 +377,13 @@ pub fn test_mid0052_all() {
 
 //Mid0053 Tests
 pub fn test_mid0053_1() {
-    //MID 0050 Vehicle ID Number download request
+  
     let mut mid0053 = Mid0053T::new();
     println!("Mid0053 Test 1 = {}", mid0053.mid.pack());
 }
 
 pub fn test_mid0053_2() {
-    //MID 0050 Vehicle ID Number download request
+  
    let mut mid0053 = Mid0053T::new();
    mid0053.mid.header = mid0053.mid.process_header("00200053001".to_string());
    println!("Mid0053 Test 2 = {}", mid0053.mid.pack());
@@ -393,13 +396,13 @@ pub fn test_mid0053_all() {
 
 //Mid0060 Tests
 pub fn test_mid0060_1() {
-    //MID 0050 Vehicle ID Number download request
+    
     let mut mid0060 = Mid0060T::new();
     println!("Mid0060 Test 1 = {}", mid0060.mid.pack());
 }
 
 pub fn test_mid0060_2() {
-    //MID 0050 Vehicle ID Number download request
+    
    let mut mid0060 = Mid0060T::new();
    mid0060.mid.header = mid0060.mid.process_header("00200060001".to_string());
    println!("Mid0060 Test 2 = {}", mid0060.mid.pack());
@@ -408,4 +411,43 @@ pub fn test_mid0060_2() {
 pub fn test_mid0060_all() {
    test_mid0060_1();
    test_mid0060_2();
+}
+
+//Mid0061 Tests
+pub fn test_mid0061_1() {
+    
+    //MID 0061 Last tightening result data
+    let mut mid0061 = Mid0061T::new();
+    
+    mid0061.set_parameter_set_id(1);
+    mid0061.set_parameter_set_name("PSET001".to_string());
+    mid0061.set_torque_status(Enums::TighteningValueStatus::Ok);
+    mid0061.set_torque_final_target(2.3);
+    mid0061.set_torque_max_limit(3.0);
+    mid0061.set_torque_min_limit(2.0);
+    mid0061.set_angle_max_limit(500);
+    mid0061.set_angle_min_limit(200);
+    mid0061.set_angle(250);
+    mid0061.set_angle_final_target(250);
+    mid0061.set_torque(2.3);
+    mid0061.set_vin_number("123456".to_string());
+    mid0061.set_cell_id(1);
+    mid0061.set_channel_id(1);
+    mid0061.set_result_type(Enums::ResultType::Tightening);
+    mid0061.set_timestamp(Local::now());
+    mid0061.set_torque_values_unit(Enums::TorqueValuesUnit::LbfFt);
+
+    println!("Mid0061 Test 1 = {}", mid0061.pack());
+}
+
+pub fn test_mid0061_2() {
+    //MID 0061 Last tightening result data
+   let mut mid0061 = Mid0061T::new();
+   mid0061.mid.header = mid0061.mid.process_header("02310061001 01000102010304123456 050600107080910111120002001300030014000230150002301600200170050018002501900250202024-10-21:13:50:57212223".to_string());
+   println!("Mid0061 Test 2 = {}", mid0061.pack());
+}
+
+pub fn test_mid0061_all() {
+   test_mid0061_1();
+   test_mid0061_2();
 }
