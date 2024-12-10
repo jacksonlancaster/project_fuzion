@@ -19,6 +19,10 @@ use crate::OpenProtocolInterpreter::Vin::Mid0052::Mid0052T;
 use crate::OpenProtocolInterpreter::Vin::Mid0053::Mid0053T;
 use crate::OpenProtocolInterpreter::Tightening::Mid0060::Mid0060T;
 use crate::OpenProtocolInterpreter::Tightening::Mid0061::Mid0061T;
+use crate::OpenProtocolInterpreter::Tightening::Mid0062::Mid0062T;
+use crate::OpenProtocolInterpreter::Alarm::Mid0070::Mid0070T;
+use crate::OpenProtocolInterpreter::Alarm::Mid0071::Mid0071T;
+use crate::OpenProtocolInterpreter::KeepAlive::Mid9999::Mid9999T;
 use crate::OpenProtocolInterpreter::Enums;
 
 //Mid0001 Tests
@@ -450,4 +454,88 @@ pub fn test_mid0061_2() {
 pub fn test_mid0061_all() {
    test_mid0061_1();
    test_mid0061_2();
+}
+
+//Mid0062 Tests
+pub fn test_mid0062_1() {
+    
+    let mut mid0062 = Mid0062T::new();
+    println!("Mid0062 Test 1 = {}", mid0062.pack());
+}
+
+pub fn test_mid0062_2() {
+    
+   let mut mid0062 = Mid0062T::new();
+   mid0062.mid.header = mid0062.process_header("00200062001".to_string());
+   println!("Mid0062 Test 2 = {}", mid0062.pack());
+}
+
+pub fn test_mid0062_all() {
+   test_mid0062_1();
+   test_mid0062_2();
+}
+
+//Mid0070 Tests
+pub fn test_mid0070_1() {
+    //MID 0070 Alarm subscribe
+    let mut mid0070 = Mid0070T::new();
+    println!("Mid0070 Test 1 = {}", mid0070.pack());
+}
+
+pub fn test_mid0070_2() {
+    //MID 0070 Alarm subscribe
+   let mut mid0070 = Mid0070T::new();
+   mid0070.mid.header = mid0070.process_header("00200070001".to_string());
+   println!("Mid0070 Test 2 = {}", mid0070.pack());
+}
+
+pub fn test_mid0070_all() {
+   test_mid0070_1();
+   test_mid0070_2();
+}
+
+
+//Mid0071 Tests
+pub fn test_mid0071_1() {
+    //MID 0071 Alarm
+    let mut mid0071 = Mid0071T::new();
+            
+    mid0071.set_alarm_text("1234".to_string());
+    mid0071.set_controller_ready_status(false);
+    mid0071.set_error_code("12345".to_string());
+    mid0071.set_tool_ready_status(false);
+    mid0071.set_time(Local::now());
+    println!("Mid0071 Test 1 = {}", mid0071.pack());
+}
+
+pub fn test_mid0071_2() {
+    //MID 0071 Alarm
+   let mut mid0071 = Mid0071T::new();
+   mid0071.mid.header = mid0071.process_header("00530071001 011234020030042024-10-21:13:50:57".to_string());
+   println!("Mid0071 Test 2 = {}", mid0071.pack());
+}
+
+pub fn test_mid0071_all() {
+   test_mid0071_1();
+   test_mid0071_2();
+}
+
+//Mid9999 Tests
+pub fn test_mid9999_1() {
+
+    let mut mid9999 = Mid9999T::new();
+        
+    println!("Mid9999 Test 1 = {}", mid9999.pack());
+}
+
+pub fn test_mid9999_2() {
+
+   let mut mid9999 = Mid9999T::new();
+   mid9999.mid.header = mid9999.process_header("00209999".to_string());
+   println!("Mid9999 Test 2 = {}", mid9999.pack());
+}
+
+pub fn test_mid9999_all() {
+   test_mid9999_1();
+   test_mid9999_2();
 }

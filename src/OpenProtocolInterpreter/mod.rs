@@ -14,3 +14,5 @@ pub mod Job;
 pub mod Tool;
 pub mod Vin;
 pub mod Tightening;
+pub mod Alarm;
+pub mod KeepAlive;
