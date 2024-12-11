@@ -7,6 +7,8 @@ use crate::OpenProtocolInterpreter::Communication::Mid0005::Mid0005T;
 use crate::OpenProtocolInterpreter::Communication::Mid0008::Mid0008T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0011::Mid0011T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0012::Mid0012T;
+use crate::OpenProtocolInterpreter::ParameterSet::Mid0013::Mid0013T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0014::Mid0014T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0015::Mid0015T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0018::Mid0018T;
@@ -186,6 +188,58 @@ pub fn test_mid0011_all() {
     test_mid0011_2();
 }
 
+//Mid0012 Tests
+pub fn test_mid0012_1() {
+    //Parameter set data upload request
+    let mut mid0012 = Mid0012T::new();
+    mid0012.set_parameter_set_id(1);
+
+    println!("Mid0012 Test 1 = {}", mid0012.pack());
+}
+
+pub fn test_mid0012_2() {
+
+   //Parameter set data upload request
+   let mut mid0012 = Mid0012T::new();
+   mid0012.mid.header = mid0012.process_header("00230012001 001".to_string());
+   println!("Mid0012 Test 2 = {}", mid0012.pack());
+}
+
+pub fn test_mid0012_all() {
+   test_mid0012_1();
+   test_mid0012_2();
+}
+
+//Mid0013 Tests
+pub fn test_mid0013_1() {
+    //Parameter set data upload reply
+    let mut mid0013 = Mid0013T::new();
+   
+    mid0013.set_max_torque(2.3);
+    mid0013.set_min_torque(1.0);
+    mid0013.set_torque_final_target(2.2);
+    mid0013.set_parameter_set_name("PSET1".to_string());
+    mid0013.set_angle_final_target(500);
+    mid0013.set_max_angle(700);
+    mid0013.set_min_angle(400);
+    mid0013.set_parameter_set_id(1);
+    mid0013.set_rotation_direction(Enums::RotationDirection::Clockwise);
+
+    println!("Mid0013 Test 1 = {}", mid0013.pack());
+}
+
+pub fn test_mid0013_2() {
+
+    //Parameter set data upload reply
+   let mut mid0013 = Mid0013T::new();
+   mid0013.mid.header = mid0013.process_header("01040013001 0100102PSET1 03004050001000600023007000220080040009007001000500".to_string());
+   println!("Mid0013 Test 2 = {}", mid0013.pack());
+}
+
+pub fn test_mid0013_all() {
+   test_mid0013_1();
+   test_mid0013_2();
+}
 
 //Mid0014 Tests
 pub fn test_mid0014_1() {
