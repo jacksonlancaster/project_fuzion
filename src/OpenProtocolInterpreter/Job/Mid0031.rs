@@ -61,7 +61,6 @@
 
                 let mut me = Self{mid:MidT::new(hdr), job_ids:Vec::new()};
                 
-                me.job_ids = Vec::new();
                 me.handle_revisions();
 
                 me
@@ -72,6 +71,14 @@
                 Self::new_header(hdr1)
             }
     
+            pub fn set_header(&mut self, hdr:HeaderT) {
+                self.mid.header = hdr
+            }
+    
+            pub fn process_header(&mut self, package:String)->HeaderT {
+                self.mid.process_header(package)
+            }
+
             pub fn pack(&mut self) ->String
             {
                 self.set_total_jobs(self.job_ids.len() as i32);
@@ -85,7 +92,7 @@
             /* Common methods end here */
         
             pub fn parse(&mut self, package:String)->Self {
-                self.mid.header = self.mid.process_header(package.clone());
+                self.set_header(self.clone().process_header(package.clone()));
                 self.handle_revisions();
 
                 let mut each_job_field = self.mid.get_field(1, DataFields::EachJobId as i32);

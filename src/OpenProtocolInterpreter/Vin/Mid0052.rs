@@ -87,6 +87,14 @@ impl Mid0052T {
         Self::new_header(h)
     }
 
+    pub fn set_header(&mut self, hdr:HeaderT) {
+        self.mid.header = hdr
+    }
+
+    pub fn process_header(&mut self, package:String)->HeaderT {
+        self.mid.process_header(package)
+    }
+
     pub fn pack(&mut self)->String {
         let mut vin_number_field = self.mid.get_field(1, DataFields::VinNumber as i32);
         if self.mid.header.revision > 1 {

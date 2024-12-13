@@ -51,6 +51,18 @@ impl Mid0018T {
         Mid0018T { mid: MidT::new(header) }
     }
 
+    pub fn set_header(&mut self, hdr:HeaderT) {
+        self.mid.header = hdr
+    }
+    
+    pub fn pack(&mut self)->String {
+        self.mid.pack()
+    }
+
+    pub fn process_header(&mut self, package:String)->HeaderT {
+        self.mid.process_header(package)
+    }
+
     pub(crate) fn register_datafields() -> HashMap<i32, Vec<DataFieldT>> {
         let mut hm:HashMap<i32, Vec<DataFieldT>>  = HashMap::new();
         

@@ -30,6 +30,10 @@ impl Mid0062T {
             Self::new_header(hdr1)
         }
 
+        pub fn set_header(&mut self, hdr:HeaderT) {
+            self.mid.header = hdr
+        }
+
         pub fn pack(&mut self)->String {
             self.mid.pack()
         }

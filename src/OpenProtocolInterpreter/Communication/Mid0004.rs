@@ -55,6 +55,14 @@ impl Mid0004T {
         Self::new_header(h)
     }
 
+    pub fn set_header(&mut self, hdr:HeaderT) {
+        self.mid.header = hdr
+    }
+
+    pub fn process_header(&mut self, package:String)->HeaderT {
+        self.mid.process_header(package)
+    }
+
     pub fn pack(&mut self) ->String
     {
         self.handle_revision();
@@ -63,7 +71,8 @@ impl Mid0004T {
 
     pub fn parse(&mut self, package:String)->Self
     {
-        self.mid.header = self.mid.process_header(package.clone());
+
+        self.set_header(self.clone().process_header(package.clone()));
         self.handle_revision();
         self.mid.process_data_fields(package);
         return self.clone();

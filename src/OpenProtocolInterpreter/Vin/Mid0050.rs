@@ -54,6 +54,14 @@ impl Mid0050T {
         Mid0050T { mid: MidT::new(header) }
     }
 
+    pub fn set_header(&mut self, hdr:HeaderT) {
+        self.mid.header = hdr
+    }
+
+    pub fn process_header(&mut self, package:String)->HeaderT {
+        self.mid.process_header(package)
+    }
+
     pub fn pack(&mut self)->String {
         self.mid.get_field(1, DataFields::VinNumber as i32).size = self.vin_number().len() as i32;
         return self.mid.pack();

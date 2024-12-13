@@ -31,4 +31,16 @@ impl Mid0053T {
         h.revision = revision;
         Self::new_header(h)
     }
+
+    pub fn set_header(&mut self, hdr:HeaderT) {
+        self.mid.header = hdr
+    }
+    
+    pub fn pack(&mut self)->String {
+        self.mid.pack()
+    }
+
+    pub fn process_header(&mut self, package:String)->HeaderT {
+        self.mid.process_header(package)
+    }
 }

@@ -54,6 +54,14 @@ impl Mid0011T {
             Self::new_header(hdr1)
         }
 
+        pub fn set_header(&mut self, hdr:HeaderT) {
+            self.mid.header = hdr
+        }
+
+        pub fn process_header(&mut self, package:String)->HeaderT {
+            self.mid.process_header(package)
+        }
+
         pub fn pack(&mut self) ->String
         {
             self.mid.get_field(1, DataFields::TotalParameterSets as i32).set_value2(OpenProtocolConvertT::tp_i32_to_string, self.total_parameter_sets() as i32);
@@ -65,8 +73,7 @@ impl Mid0011T {
         /* Common methods end here */
     
         pub(crate)  fn parse(&mut self, package:String)->Self {
-            self.mid.header = self.mid.process_header(package.clone());
-
+            self.set_header(self.clone().process_header(package.clone()));
             self.mid.get_field(1, DataFields::EachParameterSet as i32).size = self.mid.header.length - self.mid.get_field(1, DataFields::EachParameterSet as i32).index;
             self.mid.process_data_fields(package);
             self.parameter_sets = self.parse_parameter_set_id_list(self.clone().mid.get_field(1, DataFields::EachParameterSet as i32).value).to_vec();

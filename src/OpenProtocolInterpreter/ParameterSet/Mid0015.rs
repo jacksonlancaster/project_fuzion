@@ -179,6 +179,14 @@ impl Mid0015T {
         
         self.mid.header.to_string()
     }
+    
+    pub fn set_header(&mut self, hdr:HeaderT) {
+        self.mid.header = hdr
+    }
+
+    pub fn process_header(&mut self, package:String)->HeaderT {
+        self.mid.process_header(package)
+    }
 
     pub fn pack(&mut self) ->String
     {

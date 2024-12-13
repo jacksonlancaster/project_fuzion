@@ -48,4 +48,16 @@ impl Mid0060T {
             h.no_ack_flag = no_ack_flag.unwrap_or(false);
             Self::new_header(h)
         }
+
+        pub fn set_header(&mut self, hdr:HeaderT) {
+            self.mid.header = hdr
+        }
+        
+        pub fn pack(&mut self)->String {
+            self.mid.pack()
+        }
+
+        pub fn process_header(&mut self, package:String)->HeaderT {
+            self.mid.process_header(package)
+        }
 }
