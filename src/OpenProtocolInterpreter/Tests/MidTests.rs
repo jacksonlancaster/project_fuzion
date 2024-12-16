@@ -316,15 +316,14 @@ pub fn test_mid0018_all() {
 pub fn test_mid0031_1() {
 
     let mut mid0031 = Mid0031T::new();
-    mid0031.job_ids.push(1);
-    println!("Mid0031 Test 1 = {}", mid0031.mid.pack());
+    println!("Mid0031 Test 1 = {}", mid0031.pack());
 }
 
 pub fn test_mid0031_2() {
 
    let mut mid0031 = Mid0031T::new();
    mid0031.set_header( mid0031.clone().process_header("00220031001 00".to_string()));
-   println!("Mid0031 Test 2 = {}", mid0031.mid.pack());
+   println!("Mid0031 Test 2 = {}", mid0031.pack());
 }
 
 pub fn test_mid0031_all() {

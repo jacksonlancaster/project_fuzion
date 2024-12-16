@@ -150,24 +150,25 @@ impl DataFieldT {
 
         pub fn get_value<T: 'static + Clone>(&mut self, converter:fn(String)->T) -> T 
         where 
-            T:'static + Utils::ClnAny + Clone,
+            T:'static + Utils::ClnAny + Clone + Default,
         
         {
 
             if Utils::is_null_or_white_space(self.value.to_string()) {
-                self.cached_value = None; //TBD- T::default() ?
+                self.cached_value = None;
             } else {
                 if self.is_value_not_cached::<T>() {
                     self.cached_value = Some(Utils::ClnBox::new(converter(self.value.to_string())));
                 }
             }
 
-            self.cached_value
+            let ret_val = self.cached_value
                 .as_ref()
                 .and_then(|boxed| boxed.downcast_ref::<T>())
-                .cloned()
-                .expect("Failed to retrieve Cached Value")
+                .cloned();
 
+            
+            ret_val.unwrap_or_default()
         }
 
         pub fn get_value2<T: 'static + Clone>(&mut self, converter:fn(Vec<u8>)->T) -> T 
