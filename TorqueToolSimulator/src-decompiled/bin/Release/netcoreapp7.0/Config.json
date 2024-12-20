@@ -1,0 +1,58 @@
+{
+  "Tool": [
+    {
+      "Name": "GA1TR1050LSAC1T1",
+      "Port": "4545",
+      "ResultPattern": "PFFFPP",
+      "ResultDelay": 3000,
+      "Tool_PSETS": [ 5 ]
+    },
+    {
+      "Name": "GA1TR1050LSAC1T2",
+      "Port": "4546",
+      "ResultPattern": "PPRPF",
+      "ResultDelay": 3000,
+      "Tool_PSETS": [ 60, 61 ]
+    },
+    {
+      "Name": "GA1TR1050LSAC1T3",
+      "Port": "4547",
+      "ResultPattern": "PPRPF",
+      "ResultDelay": 3000,
+      "Tool_PSETS": [ 0 ]
+    }
+  ],
+
+  "PSETs": [
+    {
+      "ID": 5,
+      "Upper_Torque_Limit": 10.0,
+      "Lower_Torque_Limit": 5.0,
+      "Torque_Target": 8.5,
+      "Upper_Angle_Limit": 999,
+      "Lower_Angle_Limit": 500,
+      "Angle_Target": 751,
+      "Name": "8.5 Newton"
+    },
+    {
+      "ID": 60,
+      "Upper_Torque_Limit": 10.0,
+      "Lower_Torque_Limit": 5.0,
+      "Torque_Target": 8.5,
+      "Upper_Angle_Limit": 999,
+      "Lower_Angle_Limit": 500,
+      "Angle_Target": 750,
+      "Name": "8.5 Newton"
+    },
+    {
+      "ID": 61,
+      "Upper_Torque_Limit": 12.0,
+      "Lower_Torque_Limit": 5.0,
+      "Torque_Target": 10.1,
+      "Upper_Angle_Limit": 999,
+      "Lower_Angle_Limit": 500,
+      "Angle_Target": 750,
+      "Name": "10.1 Newton"
+    }
+  ]
+}

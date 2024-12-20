@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "NoqeEga8sNNi3etB32UBMhTq+vyIHHNR6E1p/kjlTLC9WxkXyquQ0qnBD5lzXTw3D9HwVe7Ip6jTHsaRIPPbiA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\jlancaster\\Downloads\\TorqueToolSimulator01\\TorqueToolSimulator\\src-decompiled\\OpenProtocol_Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jlancaster\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
