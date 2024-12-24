@@ -37,5 +37,6 @@ fn main() {
     MidTests::test_mid0062_all();
     MidTests::test_mid0070_all();
     MidTests::test_mid0071_all();
+    MidTests::test_mid0270_all();
     MidTests::test_mid9999_all();
 }

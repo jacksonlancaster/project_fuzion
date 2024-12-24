@@ -1,4 +1,5 @@
 use std::any::{type_name, TypeId};
+use std::cmp::Ordering;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::any::Any;
 use std::fmt::Debug;
@@ -76,6 +77,9 @@ pub fn format_some_i32_to_str(value:Option<i32>, padding_width:usize)->String
     formatted_val
 }
 
+pub fn is_assignable_from(a:TypeId, b:TypeId)->bool {
+    a.cmp(&b) == Ordering::Equal
+}
 
 #[macro_export]
     macro_rules! ToBytes {

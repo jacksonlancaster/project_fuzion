@@ -24,6 +24,7 @@ use crate::OpenProtocolInterpreter::Tightening::Mid0061::Mid0061T;
 use crate::OpenProtocolInterpreter::Tightening::Mid0062::Mid0062T;
 use crate::OpenProtocolInterpreter::Alarm::Mid0070::Mid0070T;
 use crate::OpenProtocolInterpreter::Alarm::Mid0071::Mid0071T;
+use crate::OpenProtocolInterpreter::ApplicationController::Mid0270::Mid0270T;
 use crate::OpenProtocolInterpreter::KeepAlive::Mid9999::Mid9999T;
 use crate::OpenProtocolInterpreter::Enums;
 
@@ -571,6 +572,26 @@ pub fn test_mid0071_2() {
 pub fn test_mid0071_all() {
    test_mid0071_1();
    test_mid0071_2();
+}
+
+//Mid0270 Tests
+pub fn test_mid0270_1() {
+    //MID 0270
+    let mut mid0270 = Mid0270T::new();
+
+    println!("Mid0270 Test 1 = {}", mid0270.pack());
+}
+
+pub fn test_mid0270_2() {
+    //MID 0270
+   let mut mid0270 = Mid0270T::new();
+   mid0270.set_header( mid0270.clone().process_header("00530270001".to_string()));
+   println!("Mid0270 Test 2 = {}", mid0270.pack());
+}
+
+pub fn test_mid0270_all() {
+   test_mid0270_1();
+   test_mid0270_2();
 }
 
 //Mid9999 Tests

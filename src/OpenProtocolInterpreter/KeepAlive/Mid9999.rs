@@ -22,11 +22,18 @@
     /// </summary>
 
 use crate::OpenProtocolInterpreter::Header::HeaderT;
+use crate::OpenProtocolInterpreter::Interfaces::MidGeneric;
 use crate::OpenProtocolInterpreter::MID::MidT;
 
 #[derive(Default, Clone)]
 pub struct Mid9999T { //:Mid, IIntegrator, IController
     pub mid:MidT,
+}
+
+impl MidGeneric for Mid9999T {
+    fn transform(&self) -> Box<dyn MidGeneric> {
+        Box::new(Mid9999T::new()) // Return a new instance
+    }
 }
 
 impl Mid9999T {

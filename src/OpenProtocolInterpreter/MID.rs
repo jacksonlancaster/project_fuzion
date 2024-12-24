@@ -67,6 +67,10 @@ impl MidT {
             return builder;
         }
 
+        pub fn pack_bytes(&mut self)->Vec<u8> {
+            Self::to_bytes(self.pack())
+        }
+
         pub(crate) fn pack2(&mut self, revision:i32, prefix_index:&mut i32) -> String {
             
             if !self.revisions_by_fields.contains_key(&revision) {

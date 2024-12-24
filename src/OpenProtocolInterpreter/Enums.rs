@@ -745,6 +745,7 @@ pub enum IdentifierPart
 /// <summary>
 /// Mid interpreter possible modes.
 /// </summary>
+#[derive(PartialEq)]
 pub enum InterpreterMode
 {
     Both = 0,
