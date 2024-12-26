@@ -1,3 +1,5 @@
+use std::any::{Any, TypeId};
+
 /// <summary>
 /// Controller reboot request 
 /// <para>This message causes the controller to reboot after it has accepted the command.
@@ -24,6 +26,41 @@ impl MidGeneric for Mid0270T {
     fn transform(&self) -> Box<dyn MidGeneric> {
         Box::new(Mid0270T::new()) // Return a new instance
     }
+
+    fn new()->Self {
+        let hdr1 = HeaderT{mid:Self::MID, revision:Header::DEFAULT_REVISION, ..Default::default()};
+        Self::new_header(hdr1)
+    }
+    
+    fn parse2(&mut self, package: String) -> Self
+    where
+        Self: Sized {
+        Self{mid:self.mid.parse2(package)}
+    }
+    
+    fn parse(&mut self, package:&[u8]) -> Self
+    where
+        Self: Sized {
+        Self{mid:self.mid.parse(package)}
+    }
+    
+    fn is_default(&self)->bool {
+        todo!()
+    }
+
+    fn get_type(&self)->TypeId {
+        TypeId::of::<Self>()
+    }
+    
+    fn get_type_name(&self)->String {
+        let mid = Self::MID;
+        let mut tname = String::new();
+
+        tname = "Mid".to_string() + mid.to_string().as_str();
+
+        tname
+
+    }
 }
 
 impl Interfaces::IDeclinableCommand for Mid0270T {
@@ -34,11 +71,6 @@ impl Interfaces::IDeclinableCommand for Mid0270T {
 
 impl Mid0270T {
     pub const MID:i32 = 270;
-
-    pub fn new()->Self {
-        let hdr1 = HeaderT{mid:Self::MID, revision:Header::DEFAULT_REVISION, ..Default::default()};
-        Self::new_header(hdr1)
-    }
 
     pub fn new_header(header:HeaderT)->Self {
         Mid0270T { mid: MidT::new(header) }

@@ -8,17 +8,18 @@ use super::{IMessagesTemplate::IMessagesTemplateI, MidCompiledInstance::MidCompi
 /// Base class for all <see cref="IMessagesTemplate"/> templates implementers
 /// </summary>
 
+#[derive(Clone)]
 pub struct MessagesTemplateT { //: IMessagesTemplate
     pub(crate) templates:HashMap<i32, MidCompiledInstanceT>,
 }
 
 impl IMessagesTemplateI for MessagesTemplateT {
-    fn add_or_update_template<T: MidGeneric + 'static>(&mut self, types:&mut HashMap<i32, std::any::TypeId>) {
+    fn add_or_update_template<T: MidGeneric + 'static>(&mut self, types:HashMap<i32, TypeId>) {
         for  (k, _v) in types {
-            if self.templates.contains_key(k) {
-                self.templates.remove(k);
+            if self.templates.contains_key(&k) {
+                self.templates.remove(&k);
             }
-            self.templates.insert(*k, MidCompiledInstanceT::new::<T>());
+            self.templates.insert(k, MidCompiledInstanceT::new::<T>());
         }
     }
 
@@ -28,7 +29,7 @@ impl IMessagesTemplateI for MessagesTemplateT {
     /// <param name="mid">Mid number.</param>
     /// <param name="package">Package in ASCII string.</param>
     /// <returns><see cref="Mid"/> instance.</returns>
-    fn process_package(&self, mid:i32, package:String)->Box<dyn crate::OpenProtocolInterpreter::Interfaces::MidGeneric> {
+    fn process_package(&self, mid:i32, package:String)->Box<dyn MidGeneric> {
         let compiled_instance = self.get_mid_type(mid);  
         let mid_obj =compiled_instance.invoke_compiled_constructor();
         
@@ -54,6 +55,10 @@ impl IMessagesTemplateI for MessagesTemplateT {
 }
 
 impl MessagesTemplateT {
+
+        pub fn get_type_id(&self) -> TypeId {
+            TypeId::of::<Self>()
+        }
         /// <summary>
         /// Initializes a new instance of <see cref="MessagesTemplate"/> class.
         /// </summary>

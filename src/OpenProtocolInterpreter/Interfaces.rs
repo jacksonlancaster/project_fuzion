@@ -1,10 +1,10 @@
-//use std::error::Error;
+use std::any::{Any, TypeId, type_name};
 use crate::OpenProtocolInterpreter::Enums::Error;
 use crate::OpenProtocolInterpreter::MID::MidT;
 
 use super::KeepAlive::Mid9999::Mid9999T;
 
-pub trait MidGeneric {
+pub trait MidGeneric: Any {
     fn new() -> Self
     where
         Self: Sized;
@@ -15,8 +15,25 @@ pub trait MidGeneric {
     fn parse(&mut self, package:&[u8]) -> Self
     where
         Self: Sized;
+    fn is_default(&self)->bool;
+    fn get_type(&self)->TypeId;
+    fn get_type_name(&self)->String;
+    /*fn downcast<T>(&self)->T
+    where 
+        T:Sized;*/
     fn transform(&self) -> Box<dyn MidGeneric>;
 }
+
+/*
+impl<T: Any> MidGeneric for T {
+    fn get_type(&self) -> TypeId {
+        TypeId::of::<T>()
+    }
+
+    fn get_type_name(&self) -> String {
+        type_name::<T>().to_string()
+    }
+}*/
 
 impl Default for Box<dyn MidGeneric> {
     fn default() -> Self {

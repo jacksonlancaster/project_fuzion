@@ -3,6 +3,9 @@ use std::cmp::Ordering;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::any::Any;
 use std::fmt::Debug;
+use std::io::Read;
+
+use super::OpenProtocolConvert::OpenProtocolConvertT;
 
 pub fn type_of<T>(_: T) -> &'static str {
     type_name::<T>()
@@ -29,6 +32,10 @@ pub fn to_ascii(bytes:&[u8])-> String {
     };
 
     s
+}
+
+pub fn bytes_to_int(bytes:Vec<u8>)->i32 {
+    OpenProtocolConvertT::string_to_int32(to_ascii(bytes.as_slice()))
 }
 
 pub fn format_to_str<T>(fcond:bool, value:T, padding_width:usize)->String 

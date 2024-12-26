@@ -1,4 +1,4 @@
-    /// <summary>
+/// <summary>
     /// Keep alive message
     /// <para>
     ///   The integrator sends a keep alive to the controller. The controller should only mirror and return the 
@@ -21,6 +21,7 @@
     /// <para>Answer: The same message (<see cref="Mid9999"/>) mirrored by the controller.</para>
     /// </summary>
 
+use std::any::{Any, TypeId};
 use crate::OpenProtocolInterpreter::Header::HeaderT;
 use crate::OpenProtocolInterpreter::Interfaces::MidGeneric;
 use crate::OpenProtocolInterpreter::MID::MidT;
@@ -34,17 +35,46 @@ impl MidGeneric for Mid9999T {
     fn transform(&self) -> Box<dyn MidGeneric> {
         Box::new(Mid9999T::new()) // Return a new instance
     }
+
+    fn new() -> Self {
+        Self::new_rev(Self::DEFAULT_REVISION)
+    }
+
+    fn parse2(&mut self, package: String) -> Self
+    where
+        Self: Sized {
+        Self{mid:self.mid.parse2(package)}
+    }
+    
+    fn parse(&mut self, package:&[u8]) -> Self
+    where
+        Self: Sized {
+        Self{mid:self.mid.parse(package)}
+    }
+    
+    fn is_default(&self)->bool {
+        todo!()
+    }
+    
+    fn get_type(&self)->TypeId {
+        TypeId::of::<Self>()
+    }
+
+    fn get_type_name(&self)->String {
+        let mid = Self::MID;
+        let mut tname = String::new();
+
+        tname = "Mid".to_string() + mid.to_string().as_str();
+
+        tname
+
+    }
 }
 
 impl Mid9999T {
 
         pub(crate) const DEFAULT_REVISION:i32 = 0;
         pub const MID:i32 = 9999;
-
-        /*The following 3 methods are Common Methods to all MIDs  */
-        pub fn new() -> Self {
-            Self::new_rev(Self::DEFAULT_REVISION)
-        }
 
         pub fn new_header(hdr:HeaderT) -> Self {
             Self{mid:MidT::new(hdr)}
