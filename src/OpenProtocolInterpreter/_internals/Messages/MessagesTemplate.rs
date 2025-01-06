@@ -1,6 +1,6 @@
 use std::{any::TypeId, cmp::Ordering, collections::HashMap};
 
-use crate::OpenProtocolInterpreter::{Enums, Interfaces::{IController, IIntegrator, MidGeneric}, Utils};
+use crate::OpenProtocolInterpreter::{Enums::{self, InterpreterMode}, Interfaces::{IController, IIntegrator, MidGeneric}, Utils};
 
 use super::{IMessagesTemplate::IMessagesTemplateI, MidCompiledInstance::MidCompiledInstanceT};
 
@@ -31,9 +31,11 @@ impl IMessagesTemplateI for MessagesTemplateT {
     /// <returns><see cref="Mid"/> instance.</returns>
     fn process_package(&self, mid:i32, package:String)->Box<dyn MidGeneric> {
         let compiled_instance = self.get_mid_type(mid);  
-        let mid_obj =compiled_instance.invoke_compiled_constructor();
+        let mid_obj:Box<dyn MidGeneric> =compiled_instance.invoke_compiled_constructor();
         
+        //let mo = mid_obj.as_any().downcast_ref::<T>();
         mid_obj.parse2(package)
+        //mo.unwrap().parse2()
     }
 
     /// <summary>
@@ -42,9 +44,9 @@ impl IMessagesTemplateI for MessagesTemplateT {
     /// <param name="mid">Mid number</param>
     /// <param name="package">package in bytes</param>
     /// <returns><see cref="Mid"/> instance</returns>
-    fn process_package2(&self, mid:i32, package:Vec<u8>)->Box<dyn MidGeneric> {
+    fn process_package2(&self, mid:i32, package:Vec<u8>)->Box<(dyn MidGeneric + 'static)> {
         let compiled_instance = self.get_mid_type(mid);  
-        let mid_obj =compiled_instance.invoke_compiled_constructor();
+        let mid_obj:Box<dyn MidGeneric> =compiled_instance.invoke_compiled_constructor();
         
         mid_obj.parse(package.as_slice())
     }
@@ -71,12 +73,12 @@ impl MessagesTemplateT {
         /// Filter dictionary to use only Mids from it's mode.
         /// </summary>
         /// <param name="mode">Current mode if <see cref="InterpreterMode.Controller"/>, <see cref="InterpreterMode.Integrator"/> or <see cref="InterpreterMode.Both"/>.</param>
-        pub(crate) fn filter_selected_mids(&mut self, mode:Enums::InterpreterMode) {
-            if mode == Enums::InterpreterMode::Both {
+        pub(crate) fn filter_selected_mids(&mut self, mode:InterpreterMode) {
+            if mode == InterpreterMode::Both {
                 return;
             }
             
-            let mtype = if mode == Enums::InterpreterMode::Controller {TypeId::of::<dyn IIntegrator>} else {TypeId::of::<dyn IController>};
+            let mtype = if mode == InterpreterMode::Controller {TypeId::of::<dyn IIntegrator>} else {TypeId::of::<dyn IController>};
             let temp = self.templates.clone();
             let selected_mids : Vec<_> = temp
             .values()

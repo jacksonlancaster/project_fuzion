@@ -4,7 +4,7 @@ use crate::OpenProtocolInterpreter::DataField::DataFieldT;
 use crate::OpenProtocolInterpreter::Header::{self, HeaderT};
 use crate::OpenProtocolInterpreter::OpenProtocolConvert::OpenProtocolConvertT;
 use crate::OpenProtocolInterpreter::MID::MidT;
-use crate::OpenProtocolInterpreter::Interfaces;
+use crate::OpenProtocolInterpreter::Interfaces::{self, MidGeneric};
 use crate::OpenProtocolInterpreter::Enums;
 
 
@@ -29,8 +29,8 @@ impl Interfaces::IIntegrator for Mid0001T {
 
 }
 
-impl Interfaces::IAnswerableBy<MidT> for Mid0001T {
-    fn get_answer_mid(&self) -> MidT {
+impl Interfaces::IAnswerableBy for Mid0001T {
+    fn get_answer_mid(&self) -> Box<dyn MidGeneric> {
         todo!()
     }
 }

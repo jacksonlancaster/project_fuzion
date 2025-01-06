@@ -61,6 +61,10 @@ impl MidGeneric for Mid0270T {
         tname
 
     }
+    
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 }
 
 impl Interfaces::IDeclinableCommand for Mid0270T {

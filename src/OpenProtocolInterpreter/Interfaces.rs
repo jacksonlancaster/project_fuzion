@@ -8,6 +8,7 @@ pub trait MidGeneric: Any {
     fn new() -> Self
     where
         Self: Sized;
+    fn as_any(&self) -> &dyn Any;
     fn parse2(&mut self, package: String) -> Self
     where
         Self: Sized;
@@ -15,12 +16,12 @@ pub trait MidGeneric: Any {
     fn parse(&mut self, package:&[u8]) -> Self
     where
         Self: Sized;
+    //fn downcast<T>(&mut self)->T
+    //where 
+    //    T:Sized;
     fn is_default(&self)->bool;
     fn get_type(&self)->TypeId;
     fn get_type_name(&self)->String;
-    /*fn downcast<T>(&self)->T
-    where 
-        T:Sized;*/
     fn transform(&self) -> Box<dyn MidGeneric>;
 }
 
@@ -55,9 +56,10 @@ pub trait IController
 
 /// Contract of every <see cref="Mid"/> message that can be answered by another mid which is not classified as an acknowledge.
 // Define the IAnswerableBy trait with a generic type that must implement Mid
-pub trait IAnswerableBy<TAnswerMid: MidGeneric> {
+pub trait IAnswerableBy {
     // Define any methods or associated types for IAnswerableBy here
-    fn get_answer_mid(&self) -> TAnswerMid;
+    fn get_answer_mid(&self) -> Box<dyn MidGeneric>;
+    //where TAnswerMid:Sized;
 }
 
 /// Communication message category. Every communication mid must implement <see cref="ICommunication"/>.

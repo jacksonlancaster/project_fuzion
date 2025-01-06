@@ -5,6 +5,7 @@ use crate::OpenProtocolInterpreter::Communication::Mid0002::Mid0002T;
 use crate::OpenProtocolInterpreter::Communication::Mid0004::Mid0004T;
 use crate::OpenProtocolInterpreter::Communication::Mid0005::Mid0005T;
 use crate::OpenProtocolInterpreter::Communication::Mid0008::Mid0008T;
+use crate::OpenProtocolInterpreter::Interfaces::MidGeneric;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0010::Mid0010T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0011::Mid0011T;
 use crate::OpenProtocolInterpreter::ParameterSet::Mid0012::Mid0012T;

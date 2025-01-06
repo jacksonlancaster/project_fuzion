@@ -69,6 +69,10 @@ impl MidGeneric for Mid9999T {
         tname
 
     }
+    
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 }
 
 impl Mid9999T {

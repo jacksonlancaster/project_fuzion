@@ -67,20 +67,19 @@ impl MidInterpreterT {
         template.process_package2(mid, package)
     }
 
-    pub fn  parse_type_from_string<ExpectedMid>(&mut self, package:String)->ExpectedMid
+    pub fn  parse_type_from_string<ExpectedMid>(&mut self, package:String)->Box<dyn MidGeneric>
     where ExpectedMid : MidGeneric + 'static,
     {
         let mid: Box<dyn MidGeneric> = self.parse(package);
-        /*if mid.get_type() == TypeId::of::<ExpectedMid>() {
-            //let Ok(expected_mid) = mid;
-            return *mid; // as ExpectedMid;
-        }*/
 
-       // panic!("Package is Mid {}, cannot be casted to {}", mid.get_type_name(), type_name::<ExpectedMid>());
-        
         // Downcast to the expected type
-        if let Ok(expected_mid) = mid.downcast::<ExpectedMid>() {
-            *expected_mid
+        /*let expected_mid = mid.as_any().downcast_ref::<ExpectedMid>();
+        if !expected_mid.is_none() {
+            let emid = expected_mid.unwrap();
+            *emid
+        }*/
+        if mid.get_type() == TypeId::of::<ExpectedMid>() {
+            mid
         } else {
             panic!(
                 "Package is Mid {}, cannot be casted to {}",
@@ -90,19 +89,24 @@ impl MidInterpreterT {
         }
     }
     
-    pub fn parse_type_from_bytes<ExpectedMid>(&mut self, package:Vec<u8>)->ExpectedMid
-    where ExpectedMid : MidGeneric
+    /*pub fn parse_type_from_bytes<ExpectedMid>(&mut self, package:Vec<u8>)->ExpectedMid
+    where ExpectedMid : MidGeneric*/
+    pub fn parse_type_from_bytes<ExpectedMid>(&mut self, package:Vec<u8>)->Box<dyn MidGeneric>
+    where ExpectedMid : MidGeneric + 'static,
     {
         let mid = self.parse_from_bytes(package);
-        /*if mid.get_type() == TypeId::of::<ExpectedMid>() {
-            return mid as ExpectedMid;
-        }
 
-        panic!("Package is Mid {}, cannot be casted to {}", mid.get_type_name(), type_name::<ExpectedMid>());
-        */
         // Downcast to the expected type
-        if let Ok(expected_mid) = mid.downcast::<ExpectedMid>() {
-            *expected_mid
+        /*
+        let expected_mid = mid.as_any().downcast_ref::<ExpectedMid>();
+        if !expected_mid.is_none() {
+            // let emid = expected_mid.unwrap();
+            // *emid 
+            expected_mid
+        }*/
+
+        if mid.get_type() == TypeId::of::<ExpectedMid>() {
+            mid
         } else {
             panic!(
                 "Package is Mid {}, cannot be casted to {}",
@@ -127,26 +131,28 @@ impl MidInterpreterT {
     }
 
     fn use_template_default<T>(&mut self) 
-        where T : IMessagesTemplateI
+        where T : IMessagesTemplateI + Default + 'static,
     {
         self.use_template_with_mode::<T>(Enums::InterpreterMode::Both);
     }
 
     fn use_template_with_mode<T>(&mut self, mode:Enums::InterpreterMode) 
-    where T : IMessagesTemplateI
+    where T : IMessagesTemplateI + Default + 'static,
     {
-        let t_type = TypeId::of::<T>();
-        let instance = new Lazy<IMessagesTemplate>(() => (IMessagesTemplate)Activator.CreateInstance(type, [mode]));
-        self.use_template_with_type(t_type, instance);
+        let type_id = TypeId::of::<T>();
+        //let instance = new Lazy<IMessagesTemplate>(() => (IMessagesTemplate)Activator.CreateInstance(type, [mode]));
+        let instance = MessagesTemplateT::new();
+        self.use_template_with_type(type_id, instance);
     }
 
     fn use_template_with_type_list<T>(&mut self, types:Vec<TypeId>)
-    where T : IMessagesTemplateI
+    where T : IMessagesTemplateI + Default + 'static,
     {
         if !types.is_empty() {
-            let t_type = TypeId::of::<T>();
-            let instance = new Lazy<IMessagesTemplate>(() => (IMessagesTemplate)Activator.CreateInstance(type, [types]));
-            self.use_template_with_type(t_type, instance);
+            let type_id = TypeId::of::<T>();
+            //let instance = new Lazy<IMessagesTemplate>(() => (IMessagesTemplate)Activator.CreateInstance(type, [types]));
+            let instance = MessagesTemplateT::new();
+            self.use_template_with_type(type_id, instance);
         }
     }
 
@@ -157,16 +163,13 @@ impl MidInterpreterT {
     {
         if !types.is_empty() {
             let type_id = TypeId::of::<T>();
-            let instance = self.messages_templates.get(&type_id);
+            let instance = self.messages_templates.get_mut(&type_id);
             if instance.is_none() {
                 //instance = new Lazy<IMessagesTemplate>(() => (IMessagesTemplate)Activator.CreateInstance(type, []));
-                let instance2 = MessagesTemplateT::new();// Arc::new(T::default()) as MessagesTemplateT;
-                //let instance_cloned = instance.clone();//instance2.borrow();
-                //instance = Some(&instance2_cloned);
+                let mut instance2 = MessagesTemplateT::new();
                 self.use_template_with_type(type_id, instance2.clone());
                 instance2.add_or_update_template::<T2>(types);
             } else {
-            // Update the template with the provided types
                 instance.unwrap().add_or_update_template::<T2>(types);
             }
         }
